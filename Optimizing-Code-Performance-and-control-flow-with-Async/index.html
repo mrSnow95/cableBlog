@@ -340,7 +340,7 @@
 
 
 
-  3 minute read
+  8 minute read
  &nbsp;&nbsp;&nbsp;
             
           </p>
@@ -464,15 +464,278 @@ to give us the simulation of a remote webservice API to play around with.</p>
 
 <p>How long does that take? Let’s see:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="nv">$ </span><span class="nb">time </span>node client.js
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">time </span>node client.js
 The status of user 62 is 68
 real 0m5.810s
 user 0m0.172s
 sys 0m0.033s
 
+</code></pre></div></div>
+
+<p>Not surprisingly, it takes around 5-6 seconds, because we only start the second request after the first request has been completed, and each request takes around 2-3 seconds.</p>
+
+<p>We can’t do anything about the terribly slow remote webservice, but our own code isn’t exactly optimal either. Our two requests don’t inherently depend on each other, and yet, we are executing
+them serially.</p>
+
+<p>Of course starting these requests in parallel is simple, because both are asynchronous operations:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">status</span><span class="p">;</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserName?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+  <span class="nx">name</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+ <span class="s1">'http://localhost:8080/getUserStatus?id=1234'</span><span class="p">,</span>
+ <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+ <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+ <span class="nx">status</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The status of user'</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span>
 
 </code></pre></div></div>
+
+<p>Actually ……. That’s not going to work - console.log will execute within the first event loop iteration while the request callbacks are triggered in later iterations. Mh, how about…</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">status</span><span class="p">;</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserName?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+    <span class="nx">name</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserStatus?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+  <span class="nx">status</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The status of user'</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>No, that’s not good either: We start both request in parallel, but we have no guarantee that they will finish at the same time. We risk printing</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>The status of user undefined is 69
+
+</code></pre></div></div>
+<p>if the second request finishes earlier than the first. Well, looks like we need some additional code to synchronize our finished calls. How about this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">status</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">firstHasFinished</span><span class="p">,</span> <span class="nx">secondHasFinished</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserName?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+  <span class="nx">name</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+  <span class="nx">markFinished</span><span class="p">(</span><span class="s1">'first'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserStatus?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+  <span class="nx">status</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+  <span class="nx">markFinished</span><span class="p">(</span><span class="s1">'second'</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">function</span> <span class="nx">markFinished</span><span class="p">(</span><span class="nx">step</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">step</span> <span class="o">==</span> <span class="s1">'first'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">firstHasFinished</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">step</span> <span class="o">==</span> <span class="s1">'second'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">secondHasFinished</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">firstHasFinished</span> <span class="o">&amp;&amp;</span> <span class="nx">secondHasFinished</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The status of user'</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<p>What if we need to synchronize dozens or hundreds of operations? We could use an array where we store the state of each operation… no, this whole thing doesn’t feel right.</p>
+
+<p>async to the rescue, I say!</p>
+
+<p>async is a clever little module that makes managing complex control flows in our code a breeze.</p>
+
+<p>After installing the module via npm install async, we can write our client like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="k">async</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'async'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">status</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">getUsername</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+    <span class="s1">'http://localhost:8080/getUserName?id=1234'</span><span class="p">,</span>
+    <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+      <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">getUserStatus</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+    <span class="s1">'http://localhost:8080/getUserStatus?id=1234'</span><span class="p">,</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+      <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">};</span>
+
+<span class="k">async</span><span class="p">.</span><span class="nx">parallel</span><span class="p">([</span><span class="nx">getUsername</span><span class="p">,</span> <span class="nx">getUserStatus</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The status of user'</span><span class="p">,</span> <span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'is'</span><span class="p">,</span> <span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>Let’s analyze what we are doing here.</p>
+
+<p>On line 4, we load the async library. We then wrap our requests into named functions. These
+functions will be called with a callback parameter. Inside our functions, we trigger this callback when our operation has finished - in this case, when the requests have been answered.</p>
+
+<p>We call the callbacks with two parameters: an error object (which is null if no errors occured), and the result value.</p>
+
+<p>We use the parallel method of the async object and pass an array of all the functions we want to run in parallel. Additionally, we pass a callback function which expect two parameters, err and results.</p>
+
+<p>async.parallel will trigger this callback as soon as the slowest of the parallel operations has finished (and called its callback), or as soon as one of the operations triggers its callback with an error.</p>
+
+<p>Let’s see what this does to the total runtime of our script:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">time </span>node client.js
+The status of user 95 is 54
+
+real 0m3.176s
+user 0m0.240s
+sys 0m0.044s
+</code></pre></div></div>
+
+<p>As one would expect, the total runtime of our own code matches the runtime of one request because both requests are started in parallel and will finish roughly at the same time.</p>
+
+<p><strong>Optimizing Code structure with async</strong></p>
+
+<p>Sometimes we want to run operations in series. This is of course possible by putting method calls into the callback functions of previous method calls, but the code quickly becomes ugly if you do this with a lot of methods.</p>
+
+<p>We can use async.series to achieve the same control flow with much cleaner code.</p>
+
+<p>Just as with async.parallel, we can use async.series to collect the results of each step and do something with them once all steps have finished. This is again achieved by passing the result of each step to the callback each step triggers, and by providing a callback function to the async.series call which will receive an array of all results:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="k">async</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'async'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">'http://localhost:8080/'</span><span class="p">;</span>
+
+<span class="k">async</span><span class="p">.</span><span class="nx">series</span><span class="p">([</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserName?id=1234'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s1">'Name: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserStatus?id=1234'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s1">'Status: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserCountry?id=1234'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s1">'Country: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserAge?id=1234'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="s1">'Age: '</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  
+  <span class="p">],</span>
+  
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+<span class="p">);</span>
+
+</code></pre></div></div>
+<p>In case that one of the series steps passes a non-null value to its callback as the first parameter, the series is immediately stopped, and the final callback is triggered with the results that have been collected to far, and the err parameter set to the error value passed by the failing step.</p>
+
+<p>async.waterfall is similar to async.series, as it executes all steps in series, but it also enables us to access the results of a previous step in the step that follows:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="k">async</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'async'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s1">'http://localhost:8080/'</span><span class="p">;</span>
+
+<span class="k">async</span><span class="p">.</span><span class="nx">waterfall</span><span class="p">([</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getSessionId'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">sId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserId?sessionId='</span> <span class="o">+</span> <span class="nx">sId</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">sId</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    
+    <span class="kd">function</span><span class="p">(</span><span class="nx">sId</span><span class="p">,</span> <span class="nx">uId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span> <span class="o">+</span> <span class="s1">'getUserName?userId='</span> <span class="o">+</span> <span class="nx">uId</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">).</span><span class="nx">value</span><span class="p">,</span> <span class="nx">sId</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  
+  <span class="p">],</span>
+  
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">sId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Name:'</span><span class="p">,</span> <span class="nx">name</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'SessionID:'</span><span class="p">,</span> <span class="nx">sId</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">);</span>
+
+</code></pre></div></div>
+
+<p>Note how for each step function,callback is passed as the last argument. It follows a list of arguments for each parameter that is passed by the previous function, minus the error argument which each step function always passes as the first parameter to the callback function.</p>
+
+<p>Also note the difference in the final callback: instead of results, it too expects a list of result values, passed by the last waterfall step.</p>
+
+<p>async provides several other interesting methods which help us to bring order in our control flow and allows us to orchestrate tasks in an efficient manner :)</p>
+
 
         
       </section>
@@ -509,7 +772,8 @@ sys 0m0.033s
 ">Previous</a>
     
     
-      <a href="#" class="pagination--pager disabled">Next</a>
+      <a href="/cableBlog/Node.js-and-MySQL/" class="pagination--pager" title="Node.js and MySQL
+">Next</a>
     
   </nav>
 
@@ -523,6 +787,71 @@ sys 0m0.033s
     <div class="page__related">
       <h4 class="page__related-title">You May Also Enjoy</h4>
       <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Don't-abuse-the-spread-operator/" rel="permalink">Don’t abuse the Spread Operator
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Here I was on my spare time doing some problems on Binary Search and I was doing this easy one
+, which is basically “Given a list of integers nums, find all ...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Node.js-and-MySQL/" rel="permalink">Node.js and MySQL
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  11 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to make use of a Node.js package that handles the low lev...</p>
+  </article>
+</div>
+
         
           
 
@@ -584,72 +913,6 @@ sys 0m0.033s
       
     </p>
     <p class="archive__item-excerpt" itemprop="description">One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world. Just by extending the real numbers to...</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/cableBlog/Quake-and-the-Fast-Inverse-Square-Root/" rel="permalink">Quake III and the Fast Inverse Square Root
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  4 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">Given a number  ,write a program that calculates the inverse square root:
-
-</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/cableBlog/BellmanFord/" rel="permalink">Currency Exchange and Negative Cycles
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  2 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph m...</p>
   </article>
 </div>
 

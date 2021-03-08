@@ -1,0 +1,636 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Don’t abuse the Spread Operator - pi_squared</title>
+
+
+
+
+<meta name="description" content="Here I was on my spare time doing some problems on Binary Search and I was doing this easy one, which is basically “Given a list of integers nums, find all duplicate numbers and delete their last occurrences”">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Don’t abuse the Spread Operator">
+
+
+
+
+  <meta property="og:description" content="Here I was on my spare time doing some problems on Binary Search and I was doing this easy one, which is basically “Given a list of integers nums, find all duplicate numbers and delete their last occurrences”">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-03-01T00:00:00+00:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/cableBlog/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/cableBlog/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/cableBlog/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/cableBlog/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Don’t abuse the Spread Operator">
+    <meta itemprop="description" content="Here I was on my spare time doing some problems on Binary Search and I was doing this easy one, which is basically “Given a list of integers nums, find all duplicate numbers and delete their last occurrences”">
+    <meta itemprop="datePublished" content="March 01, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Don’t abuse the Spread Operator
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Here I was on my spare time doing some problems on <a href="https://www.binarysearch.com">Binary Search</a> and I was doing this easy <a href="https://binarysearch.com/problems/Remove-Last-Duplicate-Entries">one</a>
+, which is basically “Given a list of integers nums, find all duplicate numbers and delete their last occurrences”</p>
+
+<p>At first, since I’m using the spread operator all the time writing React Components,  I wrote this solution:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Solution</span> <span class="p">{</span>
+    <span class="nx">solve</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">m</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">()</span>
+
+        <span class="nx">nums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">m</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="kd">const</span> <span class="nx">ans</span> <span class="o">=</span> <span class="nx">nums</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">arr</span><span class="p">,</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">arr</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span> <span class="p">[...</span><span class="nx">arr</span><span class="p">,</span><span class="nx">x</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="nx">m</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">===</span> <span class="nx">i</span> <span class="p">?</span> <span class="nx">arr</span> <span class="p">:</span> <span class="p">[...</span><span class="nx">arr</span><span class="p">,</span><span class="nx">x</span><span class="p">]</span>
+        <span class="p">},[])</span>
+
+        <span class="k">return</span> <span class="nx">ans</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Which was successful for cases like:  [1, 3, 4, 1, 3, 5] and [1, 1, 1, 2, 2, 2, 3, 3, 3]. But then I submitted and got TLE for an array with 100.000 entries. The problem is that the reduce/spread operator is <script type="math/tex">\mathcal{O}(N^2)</script>. <a href="https://www.richsnapp.com/article/2019/06-09-reduce-spread-anti-pattern">Link</a> to a interesting post.</p>
+
+<p>Thinking more in data structures, here is a Solution that is accepted:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Solution</span> <span class="p">{</span>
+    <span class="nx">solve</span><span class="p">(</span><span class="nx">nums</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">m</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">()</span>
+        <span class="kd">const</span> <span class="nx">m2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">()</span>
+
+        <span class="kd">const</span> <span class="nx">add</span> <span class="o">=</span> <span class="p">(</span><span class="nx">m</span><span class="p">,</span><span class="nx">x</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">m</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="nx">m</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span> <span class="nx">m</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">m</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="nx">nums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">add</span><span class="p">(</span><span class="nx">m2</span><span class="p">,</span><span class="nx">x</span><span class="p">)</span>
+            <span class="nx">m</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="kd">let</span> <span class="nx">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="nx">nums</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">x</span><span class="p">,</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">m2</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">||</span> <span class="nx">m</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">!==</span> <span class="nx">i</span><span class="p">)</span> <span class="k">return</span> <span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span>
+        <span class="p">})</span>
+
+        <span class="k">return</span> <span class="nx">list</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre></div></div>
+
+<p>Which is not as readable as the reduce/spread pattern , but it’s way way more efficient, since it’s approximately linear. With a little Google Search, i’ve found this <a href="https://medium.com/@pouyae/what-is-the-es6-spread-operator-and-why-you-shouldnt-use-it-57c056078ed9">post</a>, and I totally agree with it. Sometimes we have to sacrifice a readable code for a faster one :)</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Don%27t+abuse+the+Spread+Operator%20%2FcableBlog%2FDon%27t-abuse-the-spread-operator%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FcableBlog%2FDon%27t-abuse-the-spread-operator%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FcableBlog%2FDon%27t-abuse-the-spread-operator%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FcableBlog%2FDon%27t-abuse-the-spread-operator%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/cableBlog/Node.js-and-MySQL/" class="pagination--pager" title="Node.js and MySQL
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Node.js-and-MySQL/" rel="permalink">Node.js and MySQL
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to make use of a Node.js package that handles the low lev...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/FastFourierTransform/" rel="permalink">An Easy Way to Understand Fast Fourier Transforms
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-28T00:00:00+00:00">January 28, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world. Just by extending the real numbers to...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/cableBlog/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/cableBlog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

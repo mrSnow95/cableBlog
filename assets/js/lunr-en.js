@@ -64,6 +64,24 @@ var idx = lunr(function () {
     });
     
   
+    idx.add({
+      title: "Node.js and MySQL",
+      excerpt: "Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to...",
+      categories: [],
+      tags: [],
+      id: 6
+    });
+    
+  
+    idx.add({
+      title: "Don't abuse the Spread Operator",
+      excerpt: "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
+      categories: [],
+      tags: [],
+      id: 7
+    });
+    
+  
 
 
 console.log( jQuery.type(idx) );
@@ -133,6 +151,28 @@ var store = [
         "title": "Optimizing Code Performance and control flow with Async",
         "url": "/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/",
         "excerpt": "Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Node.js and MySQL",
+        "url": "/cableBlog/Node.js-and-MySQL/",
+        "excerpt": "Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Don't abuse the Spread Operator",
+        "url": "/cableBlog/Don't-abuse-the-spread-operator/",
+        "excerpt": "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
         "teaser":
           
             null
