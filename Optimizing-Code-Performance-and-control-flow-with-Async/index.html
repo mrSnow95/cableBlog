@@ -1,0 +1,705 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Optimizing Code Performance and control flow with Async - pi_squared</title>
+
+
+
+
+<meta name="description" content="Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. Like:">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Optimizing Code Performance and control flow with Async">
+
+
+
+
+  <meta property="og:description" content="Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. Like:">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-02-05T00:00:00+00:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Optimizing Code Performance and control flow with Async">
+    <meta itemprop="description" content="Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. Like:">
+    <meta itemprop="datePublished" content="February 05, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Optimizing Code Performance and control flow with Async
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. Like:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Starting calculation...'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The result is'</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Often, callbacks are used when operations are executed in the background and jump back into our code’s control flow asynchronously at a later point in time:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Starting calculation...'</span><span class="p">);</span>
+<span class="nx">startExpensiveCalculation</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The result is'</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+<p>If those asynchronous background operations bring forth a more complex callback behaviour, they might be implemented as an event emitter:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Starting calculation...'</span><span class="p">);</span>
+<span class="nx">calculation</span> <span class="o">=</span> <span class="nx">Calculator</span><span class="p">.</span><span class="nx">start</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+
+<span class="nx">calculation</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'error'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'An error occured:'</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">calculation</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'interim result'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Received interim result:'</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">calculation</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'done'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Received final result:'</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>Handling expensive operations asynchronously in the background, especially if they are IO-bound, is an important key to making Node.js applications perform efficiently - reading a large file or writing a lot of records to a database will always be a costly procedure, but handling it asynchronously at least ensures that the other parts of our application won’t be blocked while that procedure is going on. Nevertheless, there is often potential for optimization within our own code and its control flow</p>
+
+<p><strong>Executing expensive async background tasks in Parallel</strong></p>
+
+<p>Let’s consider an example where our application queries several different remote web services, presenting the retrieved data on the console.</p>
+
+<p>We are not going to query real remote web services, instead we will write a very simple Node.js HTTP server that will serve as a dummy web service. Our web server doesn’t really do anything
+significant, and therefore we will make it react to requests a bit slower than neccessary, in order to simulate a real web service that has a certain workload - as you will see, this makes it easier for us to show the performance gain in our own code optimizations.</p>
+
+<p>Create a new project folder and create a file server.js with the following content:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'url'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">querystring</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'querystring'</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="nx">pathname</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">pathname</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">url</span><span class="p">).</span><span class="nx">query</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">querystring</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">query</span><span class="p">)[</span><span class="s1">'id'</span><span class="p">];</span>
+
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">'pathname'</span><span class="p">:</span> <span class="nx">pathname</span><span class="p">,</span>
+        <span class="s1">'id'</span><span class="p">:</span> <span class="nx">id</span><span class="p">,</span>
+        <span class="s1">'value'</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="p">};</span>
+
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">response</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="p">{</span><span class="s2">"Content-Type"</span><span class="p">:</span> <span class="s2">"application/json"</span><span class="p">});</span>
+    <span class="nx">response</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+    <span class="p">},</span> <span class="mi">2000</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">));</span>
+
+<span class="p">})</span>
+ 
+ <span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span> <span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Echo Server listening on port 8080'</span><span class="p">);</span>
+
+ <span class="p">})</span>
+</code></pre></div></div>
+<p>This gives us a very simple “echo” server - if we request the URL http://localhost:8080/getUser?id=4, we receive {“pathname”:”/getUser”,”id”:”4”,”value”:67} as the response. This is good enough
+to give us the simulation of a remote webservice API to play around with.</p>
+
+<p>But alas, it’s a slow webservice! Someone didn’t do his optimization homework, and we now have to deal with an API where every response takes between 2 to 3 seconds (this is simulated with the setTimeout construct on lines 19-22).</p>
+
+<p>This allows to show how different request patterns will result in different runtime characteristics.</p>
+
+<p>We will now write a Node.js client for this webserver. This client will make two consecutive requests to the server, and print the output for both requests on the command line:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">);</span>
+
+<span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+  <span class="s1">'http://localhost:8080/getUserName?id=1234'</span><span class="p">,</span>
+  <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+    
+    <span class="nx">request</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span>
+      <span class="s1">'http://localhost:8080/getUserStatus?id=1234'</span><span class="p">,</span>
+      <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">status</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+        
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The status of user'</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="s1">'is'</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span>
+      <span class="p">});</span>
+    
+  <span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>This is probably the most straight-forward solution. We start the first request, wait for it to finish, print the result, then start the second request, wait for it to finish, and print that result, too.</p>
+
+<p>How long does that take? Let’s see:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span><span class="nb">time </span>node client.js
+The status of user 62 is 68
+real 0m5.810s
+user 0m0.172s
+sys 0m0.033s
+
+
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Optimizing+Code+Performance+and+control+flow+with+Async%20%2FOptimizing-Code-Performance-and-control-flow-with-Async%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FOptimizing-Code-Performance-and-control-flow-with-Async%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FOptimizing-Code-Performance-and-control-flow-with-Async%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FOptimizing-Code-Performance-and-control-flow-with-Async%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/Computational-Geometry-in-C++/" class="pagination--pager" title="Computational Geometry in C++
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/FastFourierTransform/" rel="permalink">An Easy Way to Understand Fast Fourier Transforms
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-28T00:00:00+00:00">January 28, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world. Just by extending the real numbers to...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Quake-and-the-Fast-Inverse-Square-Root/" rel="permalink">Quake III and the Fast Inverse Square Root
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Given a number  ,write a program that calculates the inverse square root:
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/BellmanFord/" rel="permalink">Currency Exchange and Negative Cycles
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph m...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

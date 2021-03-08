@@ -1,0 +1,658 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Currency Exchange and Negative Cycles - pi_squared</title>
+
+
+
+
+<meta name="description" content="I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph modeling - the ability to spot the underlying graph in the problem statement. It reminds me of Data Science / Data Engineering, where the hardest job lies in modeling and structuring data, not in the applicatin of state-of-the-art algorithms.">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Currency Exchange and Negative Cycles">
+
+
+
+
+  <meta property="og:description" content="I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph modeling - the ability to spot the underlying graph in the problem statement. It reminds me of Data Science / Data Engineering, where the hardest job lies in modeling and structuring data, not in the applicatin of state-of-the-art algorithms.">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-01-07T00:00:00+00:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Currency Exchange and Negative Cycles">
+    <meta itemprop="description" content="I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph modeling - the ability to spot the underlying graph in the problem statement. It reminds me of Data Science / Data Engineering, where the hardest job lies in modeling and structuring data, not in the applicatin of state-of-the-art algorithms.">
+    <meta itemprop="datePublished" content="January 07, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Currency Exchange and Negative Cycles
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph modeling - the ability to spot the underlying graph in the problem statement. It reminds me of Data Science / Data Engineering, where the hardest job lies in modeling and structuring data, not in the applicatin of state-of-the-art algorithms.</p>
+
+<p>One problem that a i really enjoy about graphs is the following: Given a 2D matrix describing currency exchanges ,write a funcion that determines if a arbitragy opportunity could arise. . Let’s say currency 0 is USD, 1 is BRL and 2 is EUR. We can make an arbitrage given the following matrix:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{pmatrix}
+1 & 1.32 & 0.9 \\
+0.76 & 1 & 0.72 \\
+1.11 & 1.47 & 1
+\end{pmatrix} %]]></script>
+
+<p>We could make the following :</p>
+<ol>
+  <li>Sell <script type="math/tex">1</script> BRL for <script type="math/tex">0.72</script> EUR</li>
+  <li>Sell <script type="math/tex">0.72</script> EUR for <script type="math/tex">0.80</script> USD (<script type="math/tex">0.72 * 1.11</script>)</li>
+  <li>Sell <script type="math/tex">0.80</script> USD for <script type="math/tex">1.055</script> BRL (<script type="math/tex">0.72 * 1.11 * 1.32</script>)</li>
+</ol>
+
+<p>An hence, from 1 BRL we ended up with 1.055 BRL</p>
+
+<p>In finance, arbitrage is when an investor has a portfolio as function of time <script type="math/tex">V(t)</script> , and if at <script type="math/tex">t = 0</script>, <script type="math/tex">V(0) = 0</script> and at <script type="math/tex">t = 1</script>, <script type="math/tex">V(1) > 0</script>, then a proffit without any real investment is made.</p>
+
+<p>So …. how to solve this problem ?</p>
+
+<p>We are asked to determine if there is a sequence of exchanges <script type="math/tex">w_{i}</script> such that:</p>
+
+<script type="math/tex; mode=display">w_{1} * w_{2} * w_{3} .... w_{n} > 0</script>
+
+<p>Applying Log in both sides:</p>
+
+<script type="math/tex; mode=display">log(w_{1} * w_{2} * w_{3} .... w_{n}) > 0</script>
+
+<script type="math/tex; mode=display">log(w_{1}) + log(w_{2}) + log(w_{3}) .... + log(w_{n}) > 0</script>
+
+<p>Multiplying by -1 :</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+(-log(w_{1})) + (-log(w_{2})) + (-log(w_{3})) .... + (-log(w_{n})) < 0 %]]></script>
+
+<p>Now the fun part. Imagine that we have a graph whose weights are given by <script type="math/tex">-log(w_{i})</script>. If, for this graph, we can find a cycle whose sum of weights is negative, then we can indefinitely have smaller sum of weights by traversing more times such cycle. This is what is called a negative cycle for a graph that has negative weights. So, all we got to do is transform the original matrix by applying <script type="math/tex">-log()</script> and, if we imagine that this is a adjacency matrix, determine if it has a negative cycle.</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Bellman–Ford_algorithm">Bellman Ford</a> algorithm determines the Single Source Shortest Path vector distance by relaxing the graph V-1 times, where V is the number of vertexes. If, after V-1 iterations we can still have better estimates, then a negative cycle exists:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">bool</span> <span class="nf">solve</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span> <span class="n">matrix</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">size</span><span class="p">();</span>
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">INF</span><span class="o">=</span> <span class="mf">1e9</span> <span class="o">+</span> <span class="mi">7</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">m</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">log2</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]);</span>
+    <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">V</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+
+    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="n">dist</span><span class="p">(</span><span class="n">V</span><span class="p">,</span><span class="n">INF</span><span class="p">);</span>
+    <span class="n">dist</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">rep</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">rep</span><span class="o">&lt;</span><span class="n">V</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span><span class="n">rep</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">u</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">u</span><span class="o">++</span><span class="p">){</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">!=</span><span class="n">INF</span><span class="p">){</span>
+                <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">v</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">v</span><span class="o">++</span><span class="p">)</span> <span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">min</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">],</span><span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">matrix</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// if you can still have better estimates after V-1 iterations, then a 
+</span>    <span class="c1">// negative cycle exists
+</span>    <span class="kt">bool</span> <span class="n">hasNegCycle</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">u</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">u</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">u</span><span class="o">++</span><span class="p">){</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INF</span><span class="p">){</span>
+            <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">v</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">v</span><span class="o">++</span><span class="p">)</span> <span class="k">if</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">matrix</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]){</span>
+                <span class="n">hasNegCycle</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+                <span class="k">break</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">hasNegCycle</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Pretty cool huh :)</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Currency+Exchange+and+Negative+Cycles%20%2FBellmanFord%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FBellmanFord%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FBellmanFord%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FBellmanFord%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/Pokemons,Birthdays-and-Cryptography/" class="pagination--pager" title="Pokemons,Birthdays and Cryptography
+">Previous</a>
+    
+    
+      <a href="/Quake-and-the-Fast-Inverse-Square-Root/" class="pagination--pager" title="Quake III and the Fast Inverse Square Root
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/FastFourierTransform/" rel="permalink">An Easy Way to Understand Fast Fourier Transforms
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-28T00:00:00+00:00">January 28, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world. Just by extending the real numbers to...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Quake-and-the-Fast-Inverse-Square-Root/" rel="permalink">Quake III and the Fast Inverse Square Root
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  6 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Given a number  ,write a program that calculates the inverse square root:
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

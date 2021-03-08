@@ -1,0 +1,815 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Quake III and the Fast Inverse Square Root - pi_squared</title>
+
+
+
+
+<meta name="description" content="Given a number  ,write a program that calculates the inverse square root:">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Quake III and the Fast Inverse Square Root">
+
+
+
+
+  <meta property="og:description" content="Given a number  ,write a program that calculates the inverse square root:">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-01-20T00:00:00+00:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Quake III and the Fast Inverse Square Root">
+    <meta itemprop="description" content="Given a number  ,write a program that calculates the inverse square root:">
+    <meta itemprop="datePublished" content="January 20, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Quake III and the Fast Inverse Square Root
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Given a number <script type="math/tex">x</script> ,write a program that calculates the inverse square root:</p>
+
+<script type="math/tex; mode=display">y = \frac{1}{\sqrt{x}}</script>
+
+<p>Well, it’s not that hard:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">inverse_sqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">x</span><span class="p">){</span>
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>So … no big deal, right ? Well, maybe not for our current processors embedded with special Floating Operation Units, but old computers with their traditional ALU’s had a hard time calculating such task of division and square root. And for old games like Doom and Quake III, calculating efficiently the inverse square root of a number made all the difference in the Physics Engine of the game. The reason for this is because Physics Engines have to perform lot’s of vector normalization in order to apply, for example, Snell’s Law of refraction correctly for lighting.</p>
+
+<p>Given a vector <script type="math/tex">(x,y,z)</script>, it’s norm is <script type="math/tex">\sqrt{x^2 + y^2 + z^2}</script> and therefore after normalization it becomes (<script type="math/tex">\frac{x}{\sqrt{x^2 + y^2 + z^2}},\frac{y}{\sqrt{x^2 + y^2 + z^2}},\frac{z}{\sqrt{x^2 + y^2 + z^2}}</script>). And for every frame of the game, hundreds of thousands of this calculations are made. So, how to efficiently calculate this ? Well, <a href="https://en.wikipedia.org/wiki/John_Carmack">Jonh Carmack</a> leading programmer of idSoftware at the development of Quake III, came up with the following algorithm used in the game (comments are from the original source code) :</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">Q_rsqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">number</span><span class="p">){</span>
+    <span class="kt">long</span> <span class="n">i</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">x2</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">float</span> <span class="n">threehalfs</span> <span class="o">=</span> <span class="mf">1.5</span><span class="n">F</span><span class="p">;</span>
+
+    <span class="n">x2</span> <span class="o">=</span> <span class="n">number</span><span class="o">*</span><span class="mf">0.5</span><span class="n">F</span><span class="p">;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">number</span><span class="p">;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">;</span>              <span class="c1">// evil floating point bit hack
+</span>    <span class="n">i</span> <span class="o">=</span> <span class="mh">0x5f3759df</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>      <span class="c1">// what the fuck ? 
+</span>    <span class="n">y</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">float</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">threehalfs</span> <span class="o">-</span> <span class="p">(</span><span class="n">x2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">));</span> <span class="c1">// 1st iteration
+</span> <span class="c1">// y = y * (threehalfs - (x2 * y * y)); // 2nd iteration, can be removed
+</span>    <span class="k">return</span> <span class="n">y</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+<p>Yeah, looks way more complicated than the previous code, and the way it works just shows what a hell of a programmer Carmack was. In order to understand the algorithm, some things have to be clear first:</p>
+
+<p><strong>*How Floating Points Are Represented in 32 bits</strong></p>
+
+<p>How to represent 696969 in binary ? Well, its just <script type="math/tex">0000</script> <script type="math/tex">0000</script> <script type="math/tex">0000</script> <script type="math/tex">1010</script> <script type="math/tex">1010</script> <script type="math/tex">0010</script> <script type="math/tex">1000</script> <script type="math/tex">1001</script>. Now what about <script type="math/tex">69.6969</script> ? The Standard way is how the IEEE 754 describes: Exactly hot we represent in scientific notation !</p>
+
+<p>For example, in base 10: <script type="math/tex">23000 = 2.3 * 10^{4}</script> , <script type="math/tex">0.0034 = 3.4 * 10 ^ {-3}</script>
+And in binary: <script type="math/tex">11000 = 1.1 * 2 ^ {4}</script> , <script type="math/tex">0.0101 = 1.01 * 2^{-3}</script>
+According to the triple IEE 754 Standard, the first bit represents the sign ( <script type="math/tex">+</script> or <script type="math/tex">-</script> ), the next 8 bits represents the exponent, and the next 23 bits represents the Mantissa, the number that comes before the exponent in the binary scientific representation. The following picture makes more clear:</p>
+
+<p><img src="/assets/images/bin.png" alt="My helpful screenshot" /></p>
+
+<p>That’s how the standard specifies how to interpret these 32 bits for Float Numbers. And thererefore, to get the actual number from these 32 bits, we calculate <script type="math/tex">M</script>, from the 23 first bits, <script type="math/tex">E</script>, from the next 8, and finally the last sign, <script type="math/tex">S</script>, and plug these guys in the formula:</p>
+
+<script type="math/tex; mode=display">(-1)^{S} * (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}</script>
+
+<p>The <script type="math/tex">E - 127</script> is necessary to calculate negative exponents, since <script type="math/tex">E</script> goes from <script type="math/tex">0</script> to  <script type="math/tex">255</script> ,we can have the interval <script type="math/tex">[ -127,128 ]</script>.</p>
+
+<p>Since we are calculating positive floating point number for the problem of vector normalization (all guys are squared up), we can leave the representation just as</p>
+
+<script type="math/tex; mode=display">F =  (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}</script>
+
+<p>Now for no particular reason, let’s calculate <script type="math/tex">log(F)</script> , in base 2:</p>
+
+<script type="math/tex; mode=display">log(F) = log((1 + \frac{M}{2^{23}}) * 2 ^ {E - 127})</script>
+
+<script type="math/tex; mode=display">log(F) = (E - 127) + log((1 + \frac{M}{2^{23}}))</script>
+
+<p>For the term <script type="math/tex">log((1 + \frac{M}{2^{23}}))</script> , since <script type="math/tex">M</script> belong to <script type="math/tex">[ 0,1 ]</script>,
+we can approximate the term using the Taylor Approximation: <script type="math/tex">log(1+x) \approx 1+x + \mu</script> , where is a <script type="math/tex">\mu</script> is a  <script type="math/tex">\mathcal{O}(x^2)</script> correction term. And therefore, rearranging terms:</p>
+
+<script type="math/tex; mode=display">log(F) = \frac{M + 2^{23} * E}{2 ^{23}} + \mu - 127</script>
+
+<p>The original programmers of Quake calculated that <script type="math/tex">\mu = 0.04505</script> was a optimal <script type="math/tex">\mu</script> for approximating the original function.</p>
+
+<p>Now, a important note, <script type="math/tex">M + 2^{23}*E</script> is <strong>exactly</strong> how you represent this float number in binary:</p>
+
+<p><img src="/assets/images/bin2.png" alt="My helpful screenshot" /></p>
+
+<p><strong>The Evil Bit Hack</strong></p>
+
+<p>We can’t do bit tricks with floating numbers, since they are tied to IEEE 754. But with integers we can:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 2 , shift left divide by 2
+</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 4,  shift right multiply by 2
+</span></code></pre></div></div>
+
+<p>So how can we trick C to make bit manipulation with floats ? 
+We can’t just do</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">3.33</span><span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="n">f</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Because we lose information about the floating number in the convertion.</p>
+
+<p>Here’s the magic. Take for example <script type="math/tex">3.33</script>, with binary representation:</p>
+
+<script type="math/tex; mode=display">3.33 = 0 10000000 10101010001111010111000</script>
+
+<p>if we make a hard conversion, it becomes:</p>
+
+<script type="math/tex; mode=display">3 = 00000000 00000000 00000000 0000011</script>
+
+<p>But, what if the C language inteprets <script type="math/tex">0 10000000 10101010001111010111000</script> as a integer, not a float ? Then it would interpreted as <script type="math/tex">1079320248</script>. How to do this?
+We trick C:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">3.33</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">f</span><span class="p">;</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">i</span><span class="p">);</span> <span class="c1">//prints 1079320248
+</span></code></pre></div></div>
+
+<p>We first fool C to think that the adress where <script type="math/tex">f</script> is located points to a int, not a float, and to extract this information, we point again, thats exactly whats going on line 2. Now we can make bit tricks with the binary representation of floats.</p>
+
+<p>Finally, Knowing all of this, the algorithm can be understood.</p>
+
+<p><strong>W T F</strong></p>
+
+<p>We want to calculate</p>
+
+<script type="math/tex; mode=display">y = \frac{1}{\sqrt{x}}</script>
+
+<p>Applying log to both sides:</p>
+
+<script type="math/tex; mode=display">log(y) = log(x^{\frac{-1}{2}})</script>
+
+<script type="math/tex; mode=display">log(y) = -1\frac{1}{2} * log(x)</script>
+
+<p>using the previous log representation:</p>
+
+<script type="math/tex; mode=display">\frac{M_{y} + 2^{23} * E_{y}}{2 ^{23}} + \mu - 127 = -\frac{1}{2} * (\frac{M_{x} + 2^{23} * E_{x}}{2 ^{23}} + \mu - 127)</script>
+
+<p>After a long boring rearrangement of terms, we have:</p>
+
+<script type="math/tex; mode=display">M_{y} + 2^{23} * E_{y} = \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * (M_{x} + 2^{23} * E_{x})</script>
+
+<p>Considering that <script type="math/tex">M_{y} + 2^{23} * E_{y}</script> is just the binary representation of <script type="math/tex">y</script>, (the same for <script type="math/tex">x</script>) then:</p>
+
+<script type="math/tex; mode=display">y =  \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * x</script>
+
+<p>Calculating <script type="math/tex">\frac{3}{2} * 2^{23} * (127 - \mu)</script> for <script type="math/tex">\mu = 0.04505</script> and converting to hexadecimal:</p>
+
+<script type="math/tex; mode=display">y =  0x5f3759df - \frac{x}{2}</script>
+
+<p>And therefore we transformed the original function involving division and square rooting to one only involving subtraction and bit shifting! we can do the shift because of the evil bit trick :)</p>
+
+<p>To get the actual number in float from the binary representation, we undo the trick:</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">y</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="kt">float</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>And that’s it! …. Well , not quite, there’s one more optimzation we can do to enhance the approximation:</p>
+
+<p><strong>Newton’s Method</strong></p>
+
+<p>Newton’s method is a numeric procedure to have an approximation of the root of a function.</p>
+
+<p>The following image makes it more clear:</p>
+
+<p><img src="/assets/images/newton.png" alt="My helpful screenshot" /></p>
+
+<p>So, given a number <script type="math/tex">x</script>, we iteratively calculate new $x$’s until we have <script type="math/tex">f(x) \approx 0.0</script> in the following way:</p>
+
+<script type="math/tex; mode=display">f\prime(x) = \frac{dy}{dx}</script>
+
+<script type="math/tex; mode=display">dx = \frac{dy}{f\prime(x)}</script>
+
+<script type="math/tex; mode=display">x_{n} - x_{n-1} = \frac{f(x)}{f\prime(x)}</script>
+
+<script type="math/tex; mode=display">x_{n} = x_{n-1} + \frac{f(x)}{f\prime(x)}</script>
+
+<p><script type="math/tex">\frac{1}{\sqrt{x}}</script> is root for:</p>
+
+<p>For <script type="math/tex">f(y) = \frac{1}{y^{2}} - x</script></p>
+
+<p>So,</p>
+
+<script type="math/tex; mode=display">\frac{df}{dy} = -2 * y^{-3}</script>
+
+<p>So,</p>
+
+<script type="math/tex; mode=display">y_{n} = y_{n-1} + \frac{y_{n-1}^{-2} - x}{-2*y_{n-1}^{-3}}</script>
+
+<script type="math/tex; mode=display">y_{n} = y_{n-1} - (-0.5 * y_{n-1} + 0.5 * x * y_{n-1}^{3} )</script>
+
+<script type="math/tex; mode=display">y_{n} = y_{n-1} * (1.5 - 0.5 * x * y_{n-1} * y_{n-1})</script>
+
+<p>Which is exactly the last line of code. Since we already have a good approximation, one iteration is enough. And that’s it !!! Personally this was a very cool trick to learn, how algorithms could overcome the hardware limitations at the time in smart ways :)</p>
+
+<!-- 
+
+1. You are a public general 
+2. Have an unusual amount of personal pain 
+3. A lot of rejection from family ( don’t understand you )
+4. You are a solver of complex problems ( examples - Daniel and Joesph from the Bible ) 
+5. Highly intuitive 
+6. Sensitive ( have a heart for people ) 
+7. Contact with the spirit and natural world 
+8. People have a strong reaction to you ( a lot of hate and love ) 
+9. You don’t fit in ( you are special ) 
+10. Very vivid dreams that come true in your actual life
+
+
+IEEE 754
+
+scientific notation
+
+As usual, we are given 32 bits, first bit is the sign  (always zero fo quake)
+
+next eight bits defines the exponent [255 000] -127 , bc we want negative exponent
+
+last 23 bits its the mantissa 
+
+formular ,log , approximation, correction, 
+
+mi -127 + (M+2^23 * E) / (2^23)
+
+
+cant do bit manipulation, floats are tied to IEEE 754
+
+cast -> lost bits 
+```
+Write an SQL query that reports the buyers who have bought S8 but not iPhone. 
+Product table:
++------------+--------------+------------+
+| product_id | product_name | unit_price |
++------------+--------------+------------+
+| 1          | S8           | 1000       |
+| 2          | G4           | 800        |
+| 3          | iPhone       | 1400       |
++------------+--------------+------------+
+
+Sales table:
++------------+----------+------------+----------+-------+
+| product_id | buyer_id | sale_date  | quantity | price |
++------------+----------+------------+----------+-------+
+| 1          | 1        | 2019-01-21 | 2        | 2000  |
+| 1          | 2        | 2019-02-17 | 1        | 800   |
+| 2          | 3        | 2019-06-02 | 1        | 800   |
+| 3          | 2        | 2019-05-13 | 2        | 2800  |
++------------+----------+------------+----------+-------+
+
+
+``` -->
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Quake+III+and+the+Fast+Inverse+Square+Root%20%2FQuake-and-the-Fast-Inverse-Square-Root%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FQuake-and-the-Fast-Inverse-Square-Root%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FQuake-and-the-Fast-Inverse-Square-Root%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FQuake-and-the-Fast-Inverse-Square-Root%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/BellmanFord/" class="pagination--pager" title="Currency Exchange and Negative Cycles
+">Previous</a>
+    
+    
+      <a href="/FastFourierTransform/" class="pagination--pager" title="An Easy Way to Understand Fast Fourier Transforms
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/FastFourierTransform/" rel="permalink">An Easy Way to Understand Fast Fourier Transforms
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-28T00:00:00+00:00">January 28, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world. Just by extending the real numbers to...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/BellmanFord/" rel="permalink">Currency Exchange and Negative Cycles
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph m...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>
