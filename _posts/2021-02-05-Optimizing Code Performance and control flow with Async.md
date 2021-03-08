@@ -128,12 +128,286 @@ This is probably the most straight-forward solution. We start the first request,
 How long does that take? Let’s see:
 
 ```bash
-
 $ time node client.js
 The status of user 62 is 68
 real 0m5.810s
 user 0m0.172s
 sys 0m0.033s
 
+```
+
+Not surprisingly, it takes around 5-6 seconds, because we only start the second request after the first request has been completed, and each request takes around 2-3 seconds.
+
+We can’t do anything about the terribly slow remote webservice, but our own code isn’t exactly optimal either. Our two requests don’t inherently depend on each other, and yet, we are executing
+them serially.
+
+Of course starting these requests in parallel is simple, because both are asynchronous operations:
+
+```javascript
+'use strict';
+
+var request = require('request');
+
+var name, status;
+
+request.get(
+  'http://localhost:8080/getUserName?id=1234',
+  function(err, res, body) {
+  var result = JSON.parse(body);
+  name = result.value;
+});
+
+request.get(
+ 'http://localhost:8080/getUserStatus?id=1234',
+ function(err, res, body) {
+ var result = JSON.parse(body);
+ status = result.value;
+});
+
+console.log('The status of user', name, 'is', status);
 
 ```
+
+Actually ....... That’s not going to work - console.log will execute within the first event loop iteration while the request callbacks are triggered in later iterations. Mh, how about…
+
+```javascript
+'use strict';
+
+var request = require('request');
+
+var name, status;
+
+request.get(
+  'http://localhost:8080/getUserName?id=1234',
+  function(err, res, body) {
+    var result = JSON.parse(body);
+    name = result.value;
+});
+
+request.get(
+  'http://localhost:8080/getUserStatus?id=1234',
+  function(err, res, body) {
+  var result = JSON.parse(body);
+  status = result.value;
+
+  console.log('The status of user', name, 'is', status);
+});
+
+```
+
+No, that’s not good either: We start both request in parallel, but we have no guarantee that they will finish at the same time. We risk printing
+
+```bash
+The status of user undefined is 69
+
+```
+if the second request finishes earlier than the first. Well, looks like we need some additional code to synchronize our finished calls. How about this:
+
+```javascript
+'use strict';
+
+var request = require('request');
+
+var name, status;
+var firstHasFinished, secondHasFinished = false;
+
+request.get(
+  'http://localhost:8080/getUserName?id=1234',
+  function(err, res, body) {
+  var result = JSON.parse(body);
+  name = result.value;
+  markFinished('first');
+});
+
+request.get(
+  'http://localhost:8080/getUserStatus?id=1234',
+  function(err, res, body) {
+  var result = JSON.parse(body);
+  status = result.value;
+  markFinished('second');
+});
+
+function markFinished(step) {
+  if (step == 'first') {
+    firstHasFinished = true;
+  }
+
+  if (step == 'second') {
+    secondHasFinished = true;
+  }
+
+  if (firstHasFinished && secondHasFinished) {
+  console.log('The status of user', name, 'is', status);
+}
+
+```
+What if we need to synchronize dozens or hundreds of operations? We could use an array where we store the state of each operation… no, this whole thing doesn’t feel right.
+
+async to the rescue, I say!
+
+async is a clever little module that makes managing complex control flows in our code a breeze.
+
+After installing the module via npm install async, we can write our client like this:
+
+```javascript
+'use strict';
+
+var request = require('request');
+var async = require('async');
+
+var name, status;
+
+var getUsername = function(callback) {
+  request.get(
+    'http://localhost:8080/getUserName?id=1234',
+    function(err, res, body) {
+      var result = JSON.parse(body);
+      callback(err, result.value);
+    });
+};
+
+var getUserStatus = function(callback) {
+  request.get(
+    'http://localhost:8080/getUserStatus?id=1234',
+    function (err, res, body) {
+      var result = JSON.parse(body);
+      callback(err, result.value);
+    });
+};
+
+async.parallel([getUsername, getUserStatus], function(err, results) {
+  console.log('The status of user', results[0], 'is', results[1]);
+});
+
+```
+
+Let’s analyze what we are doing here.
+
+On line 4, we load the async library. We then wrap our requests into named functions. These
+functions will be called with a callback parameter. Inside our functions, we trigger this callback when our operation has finished - in this case, when the requests have been answered.
+
+We call the callbacks with two parameters: an error object (which is null if no errors occured), and the result value.
+
+We use the parallel method of the async object and pass an array of all the functions we want to run in parallel. Additionally, we pass a callback function which expect two parameters, err and results.
+
+async.parallel will trigger this callback as soon as the slowest of the parallel operations has finished (and called its callback), or as soon as one of the operations triggers its callback with an error.
+
+Let’s see what this does to the total runtime of our script:
+
+```bash
+$ time node client.js
+The status of user 95 is 54
+
+real 0m3.176s
+user 0m0.240s
+sys 0m0.044s
+```
+
+As one would expect, the total runtime of our own code matches the runtime of one request because both requests are started in parallel and will finish roughly at the same time.
+
+**Optimizing Code structure with async**
+
+
+Sometimes we want to run operations in series. This is of course possible by putting method calls into the callback functions of previous method calls, but the code quickly becomes ugly if you do this with a lot of methods.
+
+We can use async.series to achieve the same control flow with much cleaner code.
+
+
+Just as with async.parallel, we can use async.series to collect the results of each step and do something with them once all steps have finished. This is again achieved by passing the result of each step to the callback each step triggers, and by providing a callback function to the async.series call which will receive an array of all results:
+
+```javascript
+
+'use strict';
+
+var request = require('request');
+var async = require('async');
+
+var url = 'http://localhost:8080/';
+
+async.series([
+    
+    function(callback) {
+      request.get(url + 'getUserName?id=1234', function(err, res, body) {
+        callback(null, 'Name: ' + JSON.parse(body).value);
+      });
+    },
+    
+    function(callback) {
+      request.get(url + 'getUserStatus?id=1234', function(err, res, body) {
+        callback(null, 'Status: ' + JSON.parse(body).value);
+      });
+    },
+    
+    function(callback) {
+      request.get(url + 'getUserCountry?id=1234', function(err, res, body) {
+        callback(null, 'Country: ' + JSON.parse(body).value);
+      });
+    },
+    
+    function(callback) {
+      request.get(url + 'getUserAge?id=1234', function(err, res, body) {
+        callback(null, 'Age: ' + JSON.parse(body).value);
+      });
+    }
+  
+  ],
+  
+  function(err, results) {
+    for (var i=0; i < results.length; i++) {
+      console.log(results[i]);
+    }
+  }
+
+);
+
+```
+In case that one of the series steps passes a non-null value to its callback as the first parameter, the series is immediately stopped, and the final callback is triggered with the results that have been collected to far, and the err parameter set to the error value passed by the failing step.
+
+async.waterfall is similar to async.series, as it executes all steps in series, but it also enables us to access the results of a previous step in the step that follows:
+
+```javascript
+'use strict';
+
+var request = require('request');
+var async = require('async');
+
+var url = 'http://localhost:8080/';
+
+async.waterfall([
+    
+    function(callback) {
+      request.get(url + 'getSessionId', function(err, res, body) {
+        callback(null, JSON.parse(body).value);
+      });
+    },
+    
+    function(sId, callback) {
+      request.get(url + 'getUserId?sessionId=' + sId, function(err, res, body) {
+        callback(null, sId, JSON.parse(body).value);
+      });
+    },
+    
+    function(sId, uId, callback) {
+      request.get(url + 'getUserName?userId=' + uId, function(err, res, body) {
+        callback(null, JSON.parse(body).value, sId);
+      });
+    }
+  
+  ],
+  
+  function(err, name, sId) {
+    console.log('Name:', name);
+    console.log('SessionID:', sId);
+  }
+
+);
+
+```
+
+
+Note how for each step function,callback is passed as the last argument. It follows a list of arguments for each parameter that is passed by the previous function, minus the error argument which each step function always passes as the first parameter to the callback function.
+
+Also note the difference in the final callback: instead of results, it too expects a list of result values, passed by the last waterfall step.
+
+async provides several other interesting methods which help us to bring order in our control flow and allows us to orchestrate tasks in an efficient manner :)
+

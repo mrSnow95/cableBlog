@@ -64,6 +64,24 @@ var idx = lunr(function () {
     });
     
   
+    idx.add({
+      title: "Node.js and MySQL",
+      excerpt: "Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to...",
+      categories: [],
+      tags: [],
+      id: 6
+    });
+    
+  
+    idx.add({
+      title: "Don't abuse the Spread Operator",
+      excerpt: "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
+      categories: [],
+      tags: [],
+      id: 7
+    });
+    
+  
 
 
 console.log( jQuery.type(idx) );
@@ -76,7 +94,7 @@ var store = [
       
       {
         "title": "Pokemons,Birthdays and Cryptography",
-        "url": "/Pokemons,Birthdays-and-Cryptography/",
+        "url": "http://localhost:4000/cableBlog/Pokemons,Birthdays-and-Cryptography/",
         "excerpt": "Supose you’re walking on the streets hunting Pokemons in . Your objective is to collect different types of Pokemon, where...",
         "teaser":
           
@@ -87,7 +105,7 @@ var store = [
       
       {
         "title": "Currency Exchange and Negative Cycles",
-        "url": "/BellmanFord/",
+        "url": "http://localhost:4000/cableBlog/BellmanFord/",
         "excerpt": "I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph...",
         "teaser":
           
@@ -98,7 +116,7 @@ var store = [
       
       {
         "title": "Quake III and the Fast Inverse Square Root",
-        "url": "/Quake-and-the-Fast-Inverse-Square-Root/",
+        "url": "http://localhost:4000/cableBlog/Quake-and-the-Fast-Inverse-Square-Root/",
         "excerpt": "Given a number ,write a program that calculates the inverse square root: Well, it’s not that hard: float inverse_sqrt(float x){...",
         "teaser":
           
@@ -109,7 +127,7 @@ var store = [
       
       {
         "title": "An Easy Way to Understand Fast Fourier Transforms",
-        "url": "/FastFourierTransform/",
+        "url": "http://localhost:4000/cableBlog/FastFourierTransform/",
         "excerpt": "One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world....",
         "teaser":
           
@@ -120,7 +138,7 @@ var store = [
       
       {
         "title": "Computational Geometry in C++",
-        "url": "/Computational-Geometry-in-C++/",
+        "url": "http://localhost:4000/cableBlog/Computational-Geometry-in-C++/",
         "excerpt": "In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming....",
         "teaser":
           
@@ -131,8 +149,30 @@ var store = [
       
       {
         "title": "Optimizing Code Performance and control flow with Async",
-        "url": "/Optimizing-Code-Performance-and-control-flow-with-Async/",
+        "url": "http://localhost:4000/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/",
         "excerpt": "Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Node.js and MySQL",
+        "url": "http://localhost:4000/cableBlog/Node.js-and-MySQL/",
+        "excerpt": "Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Don't abuse the Spread Operator",
+        "url": "http://localhost:4000/cableBlog/Don't-abuse-the-spread-operator/",
+        "excerpt": "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
         "teaser":
           
             null
