@@ -29,7 +29,7 @@ The two most common and effective techniques used to scale applications in Node 
 In Node.js, the simplest pattern to distribute the load of an application across different instances running on a single machine is by using the cluster module, which is part of the core libraries. The cluster module simplifies the forking of new instances of the same application and automatically distributes incoming connections across them. The number of instances depends on how many cores are avaiable in the machine. It's important to remember that each worker is a different Node.js process with its own event loop, memory space and loaded modules.
 
 
-![My helpful screenshot](/assets/images/node.png)
+![My helpful screenshot](../assets/images/node.png)
 
 The master process is responsible for spawning a number of processes (workers), each representing an instance of the application we want to scale. Each incoming connection is then distributed across the cloned workers, spreading the load across them. Since each work is indepedent (don't share any memory), you can assign as many workers as the number of cores avaiable in the system. If you use OS X like me, you can find out by entering the command in the shell:
 

@@ -356,42 +356,40 @@
 
 <p>One problem that a i really enjoy about graphs is the following: Given a 2D matrix describing currency exchanges ,write a funcion that determines if a arbitragy opportunity could arise. . Let’s say currency 0 is USD, 1 is BRL and 2 is EUR. We can make an arbitrage given the following matrix:</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{pmatrix}
-1 & 1.32 & 0.9 \\
-0.76 & 1 & 0.72 \\
-1.11 & 1.47 & 1
-\end{pmatrix} %]]></script>
+\[\begin{pmatrix}
+1 &amp; 1.32 &amp; 0.9 \\
+0.76 &amp; 1 &amp; 0.72 \\
+1.11 &amp; 1.47 &amp; 1
+\end{pmatrix}\]
 
 <p>We could make the following :</p>
 <ol>
-  <li>Sell <script type="math/tex">1</script> BRL for <script type="math/tex">0.72</script> EUR</li>
-  <li>Sell <script type="math/tex">0.72</script> EUR for <script type="math/tex">0.80</script> USD (<script type="math/tex">0.72 * 1.11</script>)</li>
-  <li>Sell <script type="math/tex">0.80</script> USD for <script type="math/tex">1.055</script> BRL (<script type="math/tex">0.72 * 1.11 * 1.32</script>)</li>
+  <li>Sell \(1\) BRL for \(0.72\) EUR</li>
+  <li>Sell \(0.72\) EUR for \(0.80\) USD (\(0.72 * 1.11\))</li>
+  <li>Sell \(0.80\) USD for \(1.055\) BRL (\(0.72 * 1.11 * 1.32\))</li>
 </ol>
 
 <p>An hence, from 1 BRL we ended up with 1.055 BRL</p>
 
-<p>In finance, arbitrage is when an investor has a portfolio as function of time <script type="math/tex">V(t)</script> , and if at <script type="math/tex">t = 0</script>, <script type="math/tex">V(0) = 0</script> and at <script type="math/tex">t = 1</script>, <script type="math/tex">V(1) > 0</script>, then a proffit without any real investment is made.</p>
+<p>In finance, arbitrage is when an investor has a portfolio as function of time \(V(t)\) , and if at \(t = 0\), \(V(0) = 0\) and at \(t = 1\), \(V(1) &gt; 0\), then a proffit without any real investment is made.</p>
 
 <p>So …. how to solve this problem ?</p>
 
-<p>We are asked to determine if there is a sequence of exchanges <script type="math/tex">w_{i}</script> such that:</p>
+<p>We are asked to determine if there is a sequence of exchanges \(w_{i}\) such that:</p>
 
-<script type="math/tex; mode=display">w_{1} * w_{2} * w_{3} .... w_{n} > 0</script>
+\[w_{1} * w_{2} * w_{3} .... w_{n} &gt; 0\]
 
 <p>Applying Log in both sides:</p>
 
-<script type="math/tex; mode=display">log(w_{1} * w_{2} * w_{3} .... w_{n}) > 0</script>
+\[log(w_{1} * w_{2} * w_{3} .... w_{n}) &gt; 0\]
 
-<script type="math/tex; mode=display">log(w_{1}) + log(w_{2}) + log(w_{3}) .... + log(w_{n}) > 0</script>
+\[log(w_{1}) + log(w_{2}) + log(w_{3}) .... + log(w_{n}) &gt; 0\]
 
 <p>Multiplying by -1 :</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-(-log(w_{1})) + (-log(w_{2})) + (-log(w_{3})) .... + (-log(w_{n})) < 0 %]]></script>
+\[(-log(w_{1})) + (-log(w_{2})) + (-log(w_{3})) .... + (-log(w_{n})) &lt; 0\]
 
-<p>Now the fun part. Imagine that we have a graph whose weights are given by <script type="math/tex">-log(w_{i})</script>. If, for this graph, we can find a cycle whose sum of weights is negative, then we can indefinitely have smaller sum of weights by traversing more times such cycle. This is what is called a negative cycle for a graph that has negative weights. So, all we got to do is transform the original matrix by applying <script type="math/tex">-log()</script> and, if we imagine that this is a adjacency matrix, determine if it has a negative cycle.</p>
+<p>Now the fun part. Imagine that we have a graph whose weights are given by \(-log(w_{i})\). If, for this graph, we can find a cycle whose sum of weights is negative, then we can indefinitely have smaller sum of weights by traversing more times such cycle. This is what is called a negative cycle for a graph that has negative weights. So, all we got to do is transform the original matrix by applying \(-log()\) and, if we imagine that this is a adjacency matrix, determine if it has a negative cycle.</p>
 
 <p><a href="https://en.wikipedia.org/wiki/Bellman–Ford_algorithm">Bellman Ford</a> algorithm determines the Single Source Shortest Path vector distance by relaxing the graph V-1 times, where V is the number of vertexes. If, after V-1 iterations we can still have better estimates, then a negative cycle exists:</p>
 
@@ -412,9 +410,9 @@
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>
-    <span class="c1">// if you can still have better estimates after V-1 iterations, then a 
-</span>    <span class="c1">// negative cycle exists
-</span>    <span class="kt">bool</span> <span class="n">hasNegCycle</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="c1">// if you can still have better estimates after V-1 iterations, then a </span>
+    <span class="c1">// negative cycle exists</span>
+    <span class="kt">bool</span> <span class="n">hasNegCycle</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
     <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">u</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">u</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">u</span><span class="o">++</span><span class="p">){</span>
         <span class="k">if</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INF</span><span class="p">){</span>
             <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">v</span><span class="o">&lt;</span><span class="n">V</span><span class="p">;</span><span class="n">v</span><span class="o">++</span><span class="p">)</span> <span class="k">if</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dist</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">+</span> <span class="n">matrix</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]){</span>
@@ -490,7 +488,105 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="http://localhost:4000/cableBlog/Don't-abuse-the-spread-operator/" rel="permalink">Don’t abuse the Spread Operator
+        <a href="http://localhost:4000/cableBlog/A-Vector-Space-Indexing-Engine-in-Python/" rel="permalink">2021-06-06-A Vector Space Indexing Engine in Python
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  6 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">A simple Search Engine its a pretty simple thing to do. Here is an example indexer using Python.
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/A-Simple-Neural-Net/" rel="permalink">2021-06-06-A Simple Neural Net
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Neural Networks aren’t that complicated! The term “neural network” gets used as a buzzword a lot, but in reality they’re often much simpler than people imagi...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Words-in-Text-Using-TF-IDF/" rel="permalink">Words in Text Using TF-IDF
 </a>
       
     </h2>
@@ -504,114 +600,18 @@
 
 
 
-  1 minute read
+  3 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">Here I was on my spare time doing some problems on Binary Search and I was doing this easy one
-, which is basically “Given a list of integers nums, find all ...</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="http://localhost:4000/cableBlog/Node.js-and-MySQL/" rel="permalink">Node.js and MySQL
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  11 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to make use of a Node.js package that handles the low lev...</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="http://localhost:4000/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  9 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
-  </article>
-</div>
-
-        
-          
-
-
-
-<div class="grid__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="http://localhost:4000/cableBlog/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  4 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+    <p class="archive__item-excerpt" itemprop="description">TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in a document based on how frequentl...</p>
   </article>
 </div>
 
         
       </div>
     </div>
+  
   
 </div>
 

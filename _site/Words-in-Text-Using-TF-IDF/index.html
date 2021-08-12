@@ -1,0 +1,683 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Words in Text Using TF-IDF - pi_squared</title>
+
+
+
+
+<meta name="description" content="TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in a document based on how frequently they appear across multiple documents.">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Words in Text Using TF-IDF">
+
+
+  <link rel="canonical" href="http://localhost:4000/cableBlog/Words-in-Text-Using-TF-IDF/">
+  <meta property="og:url" content="http://localhost:4000/cableBlog/Words-in-Text-Using-TF-IDF/">
+
+
+
+  <meta property="og:description" content="TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in a document based on how frequently they appear across multiple documents.">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-03-01T00:00:00+00:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "http://localhost:4000/cableBlog",
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="http://localhost:4000/cableBlog/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/cableBlog/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="http://localhost:4000/cableBlog/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/cableBlog/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/cableBlog/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="http://localhost:4000/cableBlog/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Words in Text Using TF-IDF">
+    <meta itemprop="description" content="TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in a document based on how frequently they appear across multiple documents.">
+    <meta itemprop="datePublished" content="March 01, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Words in Text Using TF-IDF
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  3 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in a document based on how frequently they appear across multiple documents.</p>
+
+<ul>
+  <li>
+    <p>If a word appears frequently in a document, it’s important. Give the word a high score.</p>
+  </li>
+  <li>
+    <p>But if a word appears in many documents, it’s not a unique identifier. Give the word a low score.</p>
+  </li>
+</ul>
+
+<p>Therefore, common words like “the” and “for,” which appear in many documents, will be scaled down. Words that appear frequently in a single document will be scaled up.</p>
+
+<p>The code here is tested on Python 3 with TextBlob 0.6.1. If on Python 2, it will probably be needed to add # -<em>- coding: utf-8 -</em>- and from <strong>future</strong> import division, unicode_literals at the top.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">textblob</span> <span class="kn">import</span> <span class="n">TextBlob</span> <span class="k">as</span> <span class="n">tb</span>
+
+<span class="k">def</span> <span class="nf">tf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">blob</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">blob</span><span class="p">.</span><span class="n">words</span><span class="p">.</span><span class="n">count</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">words</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">n_containing</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">blob</span> <span class="ow">in</span> <span class="n">bloblist</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">blob</span><span class="p">.</span><span class="n">words</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">idf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bloblist</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">n_containing</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">tfidf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">blob</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">blob</span><span class="p">)</span> <span class="o">*</span> <span class="n">idf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>tf(word, blob) computes “term frequency” which is the number of times a word appears in a document blob, normalized by dividing by the total number of words in blob. We use TextBlob for breaking up the text into words and getting the word counts.</p>
+  </li>
+  <li>
+    <p>n_containing(word, bloblist) returns the number of documents containing word. A generator expression is passed to the sum() function.</p>
+  </li>
+  <li>
+    <p>idf(word, bloblist) computes “inverse document frequency” which measures how common a word is among all documents in bloblist. The more common a word is, the lower its idf. We take the ratio of the total number of documents to the number of documents containing word, then take the log of that. Add 1 to the divisor to prevent division by zero.</p>
+  </li>
+  <li>
+    <p>tfidf(word, blob, bloblist) computes the TF-IDF score. It’s the product of tf and idf.</p>
+  </li>
+</ul>
+
+<p>Testing …</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">document1</span> <span class="o">=</span> <span class="n">tb</span><span class="p">(</span><span class="s">"""Python is a 2000 made-for-TV horror movie directed by Richard
+Clabaugh. The film features several cult favorite actors, including William
+Zabka of The Karate Kid fame, Wil Wheaton, Casper Van Dien, Jenny McCarthy,
+Keith Coogan, Robert Englund (best known for his role as Freddy Krueger in the
+A Nightmare on Elm Street series of films), Dana Barron, David Bowe, and Sean
+Whalen. The film concerns a genetically engineered snake, a python, that
+escapes and unleashes itself on a small town. It includes the classic final
+girl scenario evident in films like Friday the 13th. It was filmed in Los Angeles,
+ California and Malibu, California. Python was followed by two sequels: Python
+ II (2002) and Boa vs. Python (2004), both also made-for-TV films."""</span><span class="p">)</span>
+
+<span class="n">document2</span> <span class="o">=</span> <span class="n">tb</span><span class="p">(</span><span class="s">"""Python, from the Greek word (πύθων/πύθωνας), is a genus of
+nonvenomous pythons[2] found in Africa and Asia. Currently, 7 species are
+recognised.[2] A member of this genus, P. reticulatus, is among the longest
+snakes known."""</span><span class="p">)</span>
+
+<span class="n">document3</span> <span class="o">=</span> <span class="n">tb</span><span class="p">(</span><span class="s">"""The Colt Python is a .357 Magnum caliber revolver formerly
+manufactured by Colt's Manufacturing Company of Hartford, Connecticut.
+It is sometimes referred to as a "Combat Magnum".[1] It was first introduced
+in 1955, the same year as Smith &amp;amp; Wesson's M29 .44 Magnum. The now discontinued
+Colt Python targeted the premium revolver market segment. Some firearm
+collectors and writers such as Jeff Cooper, Ian V. Hogg, Chuck Hawks, Leroy
+Thompson, Renee Smeets and Martin Dougherty have described the Python as the
+finest production revolver ever made."""</span><span class="p">)</span>
+
+<span class="n">bloblist</span> <span class="o">=</span> <span class="p">[</span><span class="n">document1</span><span class="p">,</span> <span class="n">document2</span><span class="p">,</span> <span class="n">document3</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">blob</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bloblist</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Top words in document {}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">:</span> <span class="n">tfidf</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">blob</span><span class="p">,</span> <span class="n">bloblist</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">blob</span><span class="p">.</span><span class="n">words</span><span class="p">}</span>
+    <span class="n">sorted_words</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scores</span><span class="p">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">sorted_words</span><span class="p">[:</span><span class="mi">3</span><span class="p">]:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"</span><span class="se">\t</span><span class="s">Word: {}, TF-IDF: {}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+</code></pre></div></div>
+
+<p>We then get the output:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Top words in document 1
+    Word: films, TF-IDF: 0.00997
+    Word: film, TF-IDF: 0.00665
+    Word: California, TF-IDF: 0.00665
+Top words in document 2
+    Word: genus, TF-IDF: 0.02192
+    Word: among, TF-IDF: 0.01096
+    Word: Currently, TF-IDF: 0.01096
+Top words in document 3
+    Word: Magnum, TF-IDF: 0.01382
+    Word: revolver, TF-IDF: 0.01382
+    Word: Colt, TF-IDF: 0.01382
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Words+in+Text+Using+TF-IDF%20http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FWords-in-Text-Using-TF-IDF%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FWords-in-Text-Using-TF-IDF%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FWords-in-Text-Using-TF-IDF%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FWords-in-Text-Using-TF-IDF%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/cableBlog/Don't-abuse-the-spread-operator/" class="pagination--pager" title="Don’t abuse the Spread Operator
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/cableBlog/Scalibility-and-Architectural-Patterns/" class="pagination--pager" title="Scalability and Architectural Patterns in Node.js
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/A-Vector-Space-Indexing-Engine-in-Python/" rel="permalink">2021-06-06-A Vector Space Indexing Engine in Python
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  6 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">A simple Search Engine its a pretty simple thing to do. Here is an example indexer using Python.
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/A-Simple-Neural-Net/" rel="permalink">2021-06-06-A Simple Neural Net
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Neural Networks aren’t that complicated! The term “neural network” gets used as a buzzword a lot, but in reality they’re often much simpler than people imagi...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Don't-abuse-the-spread-operator/" rel="permalink">Don’t abuse the Spread Operator
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Here I was on my spare time doing some problems on Binary Search and I was doing this easy one
+, which is basically “Given a list of integers nums, find all ...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="http://localhost:4000/cableBlog/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="http://localhost:4000/cableBlog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>
