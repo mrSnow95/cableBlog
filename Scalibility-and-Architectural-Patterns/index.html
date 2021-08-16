@@ -1,0 +1,683 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Scalability and Architectural Patterns in Node.js - pi_squared</title>
+
+
+
+
+<meta name="description" content="Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundred per second), especially if the application is mostly performing I/O-bound tasks ( reading and writing from the filesystem and the network) rather than CPU-bound ones (IoT and data processing, in which you better off using another framework like Spring Boot, in an ideal world, Node would be \(the\) choice for both I/O and CPU bound tasks, but i’m pretty sure we’ll get there :) )">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Scalability and Architectural Patterns in Node.js">
+
+
+
+
+  <meta property="og:description" content="Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundred per second), especially if the application is mostly performing I/O-bound tasks ( reading and writing from the filesystem and the network) rather than CPU-bound ones (IoT and data processing, in which you better off using another framework like Spring Boot, in an ideal world, Node would be \(the\) choice for both I/O and CPU bound tasks, but i’m pretty sure we’ll get there :) )">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-06-01T00:00:00+01:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/cableBlog/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/cableBlog/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/cableBlog/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/cableBlog/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Scalability and Architectural Patterns in Node.js">
+    <meta itemprop="description" content="Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundred per second), especially if the application is mostly performing I/O-bound tasks ( reading and writing from the filesystem and the network) rather than CPU-bound ones (IoT and data processing, in which you better off using another framework like Spring Boot, in an ideal world, Node would be \(the\) choice for both I/O and CPU bound tasks, but i’m pretty sure we’ll get there :) )">
+    <meta itemprop="datePublished" content="June 01, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Scalability and Architectural Patterns in Node.js
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundred per second), especially if the application is mostly performing I/O-bound tasks ( reading and writing from the filesystem and the network) rather than CPU-bound ones (IoT and data processing, in which you better off using another framework like Spring Boot, in an ideal world, Node would be \(the\) choice for both I/O and CPU bound tasks, but i’m pretty sure we’ll get there :) )</p>
+
+<p>So, for a large number of requests we gotta scale our aplication. There are 3 degrees of freedom that we can explore to enhance the application latency, fault tolerance and avaiability</p>
+
+<p><strong>The Three degrees of freedom of scalability</strong></p>
+
+<p>As pointed out by Martin L. Abbott and Michael T. Fisher in the book <a href="https://www.amazon.com/Art-Scalability-Architecture-Organizations-Enterprise/dp/0134032802">The Art of Scalability</a>, we have three axis to explore an application scalability:</p>
+
+<p><img src="/assets/images/cube.png" alt="My helpful screenshot" /></p>
+
+<p>1.<strong>X-axis - Cloning</strong> :The most intuitive evolution of a monolithic, unscaled application is moving right along the X-axis, which is simple, most of the time inexpensive (in terms of development cost), and highly effective. The principle behind this technique is elementary, that is, cloning the same application \(n\) times and letting each instance handle \(1/n^{th}\) of the workload.</p>
+
+<p>2.<strong>Y-axis - Decompose in Microservices</strong>: Scaling along the Y-axis means decomposing the application based on its functionalities, services, or use cases. In this instance, decomposing means creating different, standalone applications, each with its own codebase, possibly with its own dedicated database, and even with a separate UI.The criteria to split an application by its functionalities depend mostly on
+its business requirements, the use cases, the data, and many other factors.</p>
+
+<p>3.<strong>Z-axis - Splitting by data partition</strong>: This axis should be considered only if X and Y are not useful solutions, due to it’s complexity. Here the application is split in such a way that each instance is responsible for only a portion of the whole data. This is a technique often used in databases, also known as horizontal/vertical partitioning. In this setup, there are multiple instances of the same application, each of them operating on a partition of the data, which is determined using different criteria. One famous approach for this is using <a href="https://support.huawei.com/enterprise/br/doc/EDOC1100086965">Hashing Algoritms</a>. This Axis is useful for complex, distributed architectures or for very particular use cases such as, for example, when building applications relying on custom solutions for data persistence, when using databases that don’t support partitioning, or when building applications at Google scale, for instance.</p>
+
+<p>The two most common and effective techniques used to scale applications in Node are cloning and decomposing by functionality/service.</p>
+
+<p><strong>The Cluster Module</strong></p>
+
+<p>In Node.js, the simplest pattern to distribute the load of an application across different instances running on a single machine is by using the cluster module, which is part of the core libraries. The cluster module simplifies the forking of new instances of the same application and automatically distributes incoming connections across them. The number of instances depends on how many cores are avaiable in the machine. It’s important to remember that each worker is a different Node.js process with its own event loop, memory space and loaded modules.</p>
+
+<p><img src="../assets/images/node.png" alt="My helpful screenshot" /></p>
+
+<p>The master process is responsible for spawning a number of processes (workers), each representing an instance of the application we want to scale. Each incoming connection is then distributed across the cloned workers, spreading the load across them. Since each work is indepedent (don’t share any memory), you can assign as many workers as the number of cores avaiable in the system. If you use OS X like me, you can find out by entering the command in the shell:</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sysctl <span class="nt">-n</span> hw.ncpu
+</code></pre></div></div>
+
+<p>The cluster module uses the classic round-robin algorithm(the same as the operating systems lectures) to spread the load across the workers. Actually is an enhanced round robin , it is enriched with some extra behaviors that aim to avoid overloading a given worker process.</p>
+
+<p><strong>Building a simple HTTP Server</strong></p>
+
+<p>Let’s build a small HTTP server, cloned and load balanced using the cluster module. First of all, we need an application to scale, and for this example, we don’t need too much, just a very basic HTTP server.</p>
+
+<p>Create a file called app.js:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createServer</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">http</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">pid</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">process</span>
+<span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">createServer</span><span class="p">((</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// simulates CPU intensive work</span>
+    <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="nx">e7</span><span class="p">;</span> <span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nx">i</span><span class="o">--</span> <span class="p">}</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Handling request from </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">`</span><span class="p">)</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="s2">`Hello from </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">\n`</span><span class="p">)</span> 
+<span class="p">})</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Started at </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">`</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>The HTTP server we just built responds to any request by sending back a message containing its process identifier (PID); this is useful for identifying which instance
+of the application is handling the request. In this version of the application, we have only one process, so the PID that you see in the responses and the logs will always be the same. To simulate some actual CPU work, we perform an empty loop 10 million times.</p>
+
+<p>You can now check if all works as expected doing a node app.js and sending a request to http://localhost:8080 using either a browser or curl.</p>
+
+<p>You can measure the requests per second that the server is able to handle on one process. For this purpose, you can use a network benchmarking tool such as autocannon (nodejsdp.link/autocannon):</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npx autocannon <span class="nt">-c</span> 200 <span class="nt">-d</span> 10 http://localhost:8080
+</code></pre></div></div>
+
+<p>The preceding command will load the server with 200 concurrent connections for 10 seconds. On my particular machine, i got something like this:</p>
+
+<p><img src="/assets/images/npx.png" alt="My helpful screenshot" /></p>
+
+<p>An important note: The load tests performed is intentionally simple and minimal and only learning purposes. Such results cannot provide a 100% accurate evaluation of the performance.</p>
+
+<p>Now updating the server with cluster:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">createServer</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">http</span><span class="dl">'</span> 
+<span class="k">import</span> <span class="p">{</span> <span class="nx">cpus</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">os</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">cluster</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">cluster</span><span class="dl">'</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">cluster</span><span class="p">.</span><span class="nx">isMaster</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// (1) const availableCpus = cpus()</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Clustering to </span><span class="p">${</span><span class="nx">availableCpus</span><span class="p">.</span><span class="nx">length</span><span class="p">}</span><span class="s2"> processes`</span><span class="p">)</span> 
+    <span class="nx">availableCpus</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">cluster</span><span class="p">.</span><span class="nx">fork</span><span class="p">())</span>
+<span class="p">}</span> 
+<span class="k">else</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">pid</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">process</span>
+    <span class="kd">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">createServer</span><span class="p">((</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="nx">e7</span><span class="p">;</span> 
+        <span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nx">i</span><span class="o">--</span> <span class="p">}</span> 
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Handling request from </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">`</span><span class="p">)</span> 
+        <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="s2">`Hello from </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">\n`</span><span class="p">)</span>
+<span class="p">})</span>
+
+
+    <span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Started at </span><span class="p">${</span><span class="nx">pid</span><span class="p">}</span><span class="s2">`</span><span class="p">))</span> 
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>From the code, it’s clear that its easy to use the cluster module. When we launch app.js from the command line, we are actually executing the master process. In this case, the cluster.isMaster variable is set to true and the only work we are required to do is forking the current process using cluster.fork().</p>
+
+<p>When cluster.fork() is executed from the master process, the current module (app.js) is run again, but this time in worker mode. When the application runs as a worker, it can start doing some actual work. In this case, it starts a new HTTP server.</p>
+
+<p>Making another test, I’ve got the following results:</p>
+
+<p><img src="/assets/images/npx2.png" alt="My helpful screenshot" /></p>
+
+<p>For a next post I’ll talk about resiliency and availability with the cluster module, zero-downtime restart, dealing with stateful communications and scaling with a reverse proxy.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Scalability+and+Architectural+Patterns+in+Node.js%20%2FcableBlog%2FScalibility-and-Architectural-Patterns%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FcableBlog%2FScalibility-and-Architectural-Patterns%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FcableBlog%2FScalibility-and-Architectural-Patterns%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FcableBlog%2FScalibility-and-Architectural-Patterns%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/cableBlog/Asynchronous-request-batching-and-caching/" class="pagination--pager" title="Asynchronous request batching and caching
+">Previous</a>
+    
+    
+      <a href="/cableBlog/A-Simple-Neural-Net/" class="pagination--pager" title="A Simple Neural Net
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Async-Initialization-in-Node.js/" rel="permalink">Async Initialization in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-30T00:00:00+01:00">June 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example is tryi...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/A-Simple-Neural-Net/" rel="permalink">A Simple Neural Net
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Neurons
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Asynchronous-request-batching-and-caching/" rel="permalink">Asynchronous request batching and caching
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources such as web pages, images, and sty...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Async-Javascript/" rel="permalink">Async Javascript
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  9 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their result. The web, howev...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/cableBlog/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/cableBlog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

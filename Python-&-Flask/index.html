@@ -1,0 +1,950 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Python &amp; Flask - pi_squared</title>
+
+
+
+
+<meta name="description" content="To begin:">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Python &amp; Flask">
+
+
+
+
+  <meta property="og:description" content="To begin:">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-03-30T00:00:00+01:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : null,
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="/cableBlog/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/cableBlog/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="/cableBlog/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="/cableBlog/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/cableBlog/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Python &amp; Flask">
+    <meta itemprop="description" content="To begin:">
+    <meta itemprop="datePublished" content="March 30, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Python &amp; Flask
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-03-30T00:00:00+01:00">March 30, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>To begin:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>pip <span class="nb">install </span>flask
+</code></pre></div></div>
+
+<p>Flask is a good choice for a REST API because it is:</p>
+
+<ul>
+  <li>Written in Python ;</li>
+  <li>Simple to use;</li>
+  <li>Flexible;</li>
+  <li>Multiple good deployment options;</li>
+  <li>RESTful request dispatching</li>
+</ul>
+
+<p>The following is an app that responds to requests at the root, /articles and /articles/:id.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">url_for</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_root</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">'Welcome'</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_articles</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">'List of '</span> <span class="o">+</span> <span class="n">url_for</span><span class="p">(</span><span class="s">'api_articles'</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles/&lt;articleid&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_article</span><span class="p">(</span><span class="n">articleid</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">'You are reading '</span> <span class="o">+</span> <span class="n">articleid</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<p>Then make a request:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl http://127.0.0.1:5000/
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /
+Welcome
+
+GET /articles
+List of /articles
+
+GET /articles/123
+You are reading 123
+</code></pre></div></div>
+
+<p>Routes can use different converters in their definition:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles/&lt;articleid&gt;'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Can also be:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles/&lt;int:articleid&gt;'</span><span class="p">)</span>
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles/&lt;float:articleid&gt;'</span><span class="p">)</span>
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/articles/&lt;path:articleid&gt;'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The default is string which accepts any text without slashes.</p>
+
+<p><strong>GET PARAMS</strong></p>
+
+<p>Lets begin by making a complete app that responds to requests at /hello and handles an optional GET parameter</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/hello'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s">'name'</span> <span class="ow">in</span> <span class="n">request</span><span class="p">.</span><span class="n">args</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">'Hello '</span> <span class="o">+</span> <span class="n">request</span><span class="p">.</span><span class="n">args</span><span class="p">[</span><span class="s">'name'</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">'Hello John Doe'</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /hello
+Hello John Doe
+
+GET /hello?name=Luis
+Hello Luis
+</code></pre></div></div>
+
+<p><strong>Request Methods (HTTP Verbs)</strong></p>
+
+<p>Lets modify the to handle different HTTP verbs:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/echo'</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s">'GET'</span><span class="p">,</span> <span class="s">'POST'</span><span class="p">,</span> <span class="s">'PATCH'</span><span class="p">,</span> <span class="s">'PUT'</span><span class="p">,</span> <span class="s">'DELETE'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_echo</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'GET'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"ECHO: GET</span><span class="se">\n</span><span class="s">"</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'POST'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"ECHO: POST</span><span class="se">\n</span><span class="s">"</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'PATCH'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"ECHO: PACTH</span><span class="se">\n</span><span class="s">"</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'PUT'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"ECHO: PUT</span><span class="se">\n</span><span class="s">"</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'DELETE'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"ECHO: DELETE"</span>
+</code></pre></div></div>
+
+<p>To curl the -X option can be used to specify the request type:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> PATCH http://127.0.0.1:5000/echo
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /echo
+ECHO: GET
+
+POST /ECHO
+ECHO: POST
+</code></pre></div></div>
+
+<p><strong>Request Data &amp; Headers</strong></p>
+
+<p>Usually POST and PATCH are accompanied by data. And sometimes that data can be in one of multiple formats: plain text, JSON, XML, your own data format, a binary file, …</p>
+
+<p>Accessing the HTTP headers is done using the request.headers dictionary (“dictionary-like object”) and the request data using the request.data string. As a convenience, if the mimetype is application/json, request.json will contain the parsed JSON.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">json</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/messages'</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s">'POST'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_message</span><span class="p">():</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'Content-Type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'text/plain'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"Text Message: "</span> <span class="o">+</span> <span class="n">request</span><span class="p">.</span><span class="n">data</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'Content-Type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'application/json'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"JSON Message: "</span> <span class="o">+</span> <span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="n">json</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">request</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'Content-Type'</span><span class="p">]</span> <span class="o">==</span> <span class="s">'application/octet-stream'</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">'./binary'</span><span class="p">,</span> <span class="s">'wb'</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">f</span><span class="p">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s">"Binary message written!"</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">"415 Unsupported Media Type ;)"</span>
+</code></pre></div></div>
+
+<p>To specify the content type with curl:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-H</span> <span class="s2">"Content-type: application/json"</span> <span class="se">\</span>
+<span class="nt">-X</span> POST http://127.0.0.1:5000/messages <span class="nt">-d</span> <span class="s1">'{"message":"Hello Data"}'</span>
+</code></pre></div></div>
+
+<p>To send a file with curl:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-H</span> <span class="s2">"Content-type: application/octet-stream"</span> <span class="se">\</span>
+<span class="nt">-X</span> POST http://127.0.0.1:5000/messages <span class="nt">--data-binary</span> @message.bin
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /messages {"message": "Hello Data"}
+Content-type: application/json
+JSON Message: {"message": "Hello Data"}
+
+POST /message &lt;message.bin&gt;
+Content-type: application/octet-stream
+Binary message written!
+</code></pre></div></div>
+
+<p>Also note that Flask can handle files POSTed via an HTML form using request.files and curl can simulate that behavior with the -F flag.</p>
+
+<p><strong>Responses</strong></p>
+
+<p>Responses are handled by Flask’s Response class:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Response</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/hello'</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s">'GET'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'hello'</span>  <span class="p">:</span> <span class="s">'world'</span><span class="p">,</span>
+        <span class="s">'number'</span> <span class="p">:</span> <span class="mi">3</span>
+    <span class="p">}</span>
+    <span class="n">js</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="n">js</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">'application/json'</span><span class="p">)</span>
+    <span class="n">resp</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'Link'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'http://luisrei.com'</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+</code></pre></div></div>
+
+<p>To view the response HTTP headers using curl, specify the -i option:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-i</span> http://127.0.0.1:5000/hello
+</code></pre></div></div>
+
+<p>The response returned by the server, with headers included, will be:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /hello
+HTTP/1.0 200 OK
+Content-Type: application/json
+Content-Length: 31
+Link: http://luisrei.com
+Server: Werkzeug/0.8.2 Python/2.7.1
+Date: Wed, 25 Apr 2012 16:40:27 GMT
+{"hello": "world", "number": 3}
+</code></pre></div></div>
+
+<p>Mimetype is just the content-type without the additional information (e.g. charset, encoding, language,…). If possible, return the the full content type information.</p>
+
+<p>The previous example can be further simplified by using a Flask convenience method for generating JSON responses:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">jsonify</span>
+</code></pre></div></div>
+
+<p>and replacing</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resp</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="n">js</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">mimetype</span><span class="o">=</span><span class="s">'application/json'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>by</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">resp</span><span class="p">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">200</span>
+</code></pre></div></div>
+
+<p>which will generate the exact same response as the previous code.</p>
+
+<p>Specifying the mime type is particularly useful when using a custom mime type e.g. application/vnd.example.v2+json.</p>
+
+<p><strong>Status Codes &amp; Errors</strong></p>
+
+<p>Note that 200 is the default status code reply for GET requests, in both of these examples, specifying it was just for the sake of illustration. There are certain cases where overriding the defaults is necessary. Such is the case with error handling:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">not_found</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">'status'</span><span class="p">:</span> <span class="mi">404</span><span class="p">,</span>
+            <span class="s">'message'</span><span class="p">:</span> <span class="s">'Not Found: '</span> <span class="o">+</span> <span class="n">request</span><span class="p">.</span><span class="n">url</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">resp</span><span class="p">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">404</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/users/&lt;userid&gt;'</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s">'GET'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_users</span><span class="p">(</span><span class="n">userid</span><span class="p">):</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="p">{</span><span class="s">'1'</span><span class="p">:</span><span class="s">'john'</span><span class="p">,</span> <span class="s">'2'</span><span class="p">:</span><span class="s">'steve'</span><span class="p">,</span> <span class="s">'3'</span><span class="p">:</span><span class="s">'bill'</span><span class="p">}</span>
+    
+    <span class="k">if</span> <span class="n">userid</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="n">userid</span><span class="p">:</span><span class="n">users</span><span class="p">[</span><span class="n">userid</span><span class="p">]})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">not_found</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>We get:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /users/2
+HTTP/1.0 200 OK
+{
+    "2": "steve"
+}
+
+GET /users/4
+HTTP/1.0 404 NOT FOUND
+{
+"status": 404, 
+"message": "Not Found: http://127.0.0.1:5000/users/4"
+}
+</code></pre></div></div>
+
+<p>Default Flask error messages can be overwritten using either the @error_handler decorator or</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">app</span><span class="p">.</span><span class="n">error_handler_spec</span><span class="p">[</span><span class="bp">None</span><span class="p">][</span><span class="mi">404</span><span class="p">]</span> <span class="o">=</span> <span class="n">not_found</span>
+</code></pre></div></div>
+
+<p>Even if the API does not need custom error messages, if supports different mime types (JSON, XML, … ) this feature is important because Flask defaults to HTML errors.</p>
+
+<p><strong>Authorization</strong></p>
+
+<p>This is a basic HTTP Authentication Handling:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+
+<span class="k">def</span> <span class="nf">check_auth</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">username</span> <span class="o">==</span> <span class="s">'admin'</span> <span class="ow">and</span> <span class="n">password</span> <span class="o">==</span> <span class="s">'secret'</span>
+
+<span class="k">def</span> <span class="nf">authenticate</span><span class="p">():</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">{</span><span class="s">'message'</span><span class="p">:</span> <span class="s">"Authenticate."</span><span class="p">}</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="n">resp</span><span class="p">.</span><span class="n">status_code</span> <span class="o">=</span> <span class="mi">401</span>
+    <span class="n">resp</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'WWW-Authenticate'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'Basic realm="Example"'</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+
+<span class="k">def</span> <span class="nf">requires_auth</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decorated</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">auth</span> <span class="o">=</span> <span class="n">request</span><span class="p">.</span><span class="n">authorization</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">auth</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="n">authenticate</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">check_auth</span><span class="p">(</span><span class="n">auth</span><span class="p">.</span><span class="n">username</span><span class="p">,</span> <span class="n">auth</span><span class="p">.</span><span class="n">password</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">authenticate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">decorated</span>
+</code></pre></div></div>
+
+<p>And using it is a matter of replacing the check_auth function and using the requires_auth decorator:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/secrets'</span><span class="p">)</span>
+<span class="o">@</span><span class="n">requires_auth</span>
+<span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">"this is top secret"</span>
+</code></pre></div></div>
+
+<p>So now, and unauthenticated request:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /secrets
+HTTP/1.0 401 UNAUTHORIZED
+WWW-Authenticate: Basic realm="Example"
+{
+  "message": "Authenticate."
+}
+</code></pre></div></div>
+<p>While an authenticated request which can be made with curl using the -u option to use HTTP basic authentication and the -voption to look at the headers in the request</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-v</span> <span class="nt">-u</span> <span class="s2">"admin:secret"</span> http://127.0.0.1:5000/secrets
+</code></pre></div></div>
+
+<p>results in the expected response</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GET /secrets Authorization: Basic YWRtaW46c2VjcmV0
+this is top secret
+</code></pre></div></div>
+
+<p>Flask uses a MultiDict to store the headers. To present clients with multiple possible authentication schemes it is possible to simply add more WWW-Authenticate lines to the header</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">resp</span><span class="p">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'WWW-Authenticate'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'Basic realm="Example"'</span>
+<span class="n">resp</span><span class="p">.</span><span class="n">headers</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s">'WWW-Authenticate'</span><span class="p">,</span> <span class="s">'Bearer realm="Example"'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>Simple Debug and Logging</strong></p>
+
+<p>Activating pretty (HTML) debug messages during development can be done simply by passing an argument</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">app</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Flask uses python logging out off the box - some configuration required:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="s">'app.log'</span><span class="p">)</span>
+<span class="n">app</span><span class="p">.</span><span class="n">logger</span><span class="p">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+<span class="n">app</span><span class="p">.</span><span class="n">logger</span><span class="p">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="p">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="p">.</span><span class="n">route</span><span class="p">(</span><span class="s">'/hello'</span><span class="p">,</span> <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s">'GET'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_hello</span><span class="p">():</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">logger</span><span class="p">.</span><span class="n">info</span><span class="p">(</span><span class="s">'informing'</span><span class="p">)</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">logger</span><span class="p">.</span><span class="n">warning</span><span class="p">(</span><span class="s">'warning'</span><span class="p">)</span>
+    <span class="n">app</span><span class="p">.</span><span class="n">logger</span><span class="p">.</span><span class="n">error</span><span class="p">(</span><span class="s">'error'</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="s">"check your logs</span><span class="se">\n</span><span class="s">"</span>
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-03-30T00:00:00+01:00">March 30, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Python+%26+Flask%20%2FcableBlog%2FPython-%26-Flask%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2FcableBlog%2FPython-%26-Flask%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=%2FcableBlog%2FPython-%26-Flask%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2FcableBlog%2FPython-%26-Flask%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/cableBlog/Don't-abuse-the-spread-operator/" class="pagination--pager" title="Don’t abuse the Spread Operator
+">Previous</a>
+    
+    
+      <a href="/cableBlog/Async-Javascript/" class="pagination--pager" title="Async Javascript
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Async-Initialization-in-Node.js/" rel="permalink">Async Initialization in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-30T00:00:00+01:00">June 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example is tryi...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/A-Simple-Neural-Net/" rel="permalink">A Simple Neural Net
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Neurons
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/cableBlog/Asynchronous-request-batching-and-caching/" rel="permalink">Asynchronous request batching and caching
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources such as web pages, images, and sty...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="/cableBlog/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/cableBlog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

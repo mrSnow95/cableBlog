@@ -12,7 +12,7 @@ var idx = lunr(function () {
   
     idx.add({
       title: "Pokemons,Birthdays and Cryptography",
-      excerpt: "Supose you’re walking on the streets hunting Pokemons in . Your objective is to collect different types of Pokemon, where...",
+      excerpt: "Supose you’re walking on the streets hunting Pokemons in \\(Pokemon Go\\). Your objective is to collect \\(N\\) different types of...",
       categories: [],
       tags: [],
       id: 0
@@ -30,19 +30,10 @@ var idx = lunr(function () {
   
     idx.add({
       title: "Quake III and the Fast Inverse Square Root",
-      excerpt: "Given a number ,write a program that calculates the inverse square root: Well, it’s not that hard: float inverse_sqrt(float x){...",
+      excerpt: "Given a number \\(x\\) ,write a program that calculates the inverse square root: \\[y = \\frac{1}{\\sqrt{x}}\\] Well, it’s not that...",
       categories: [],
       tags: [],
       id: 2
-    });
-    
-  
-    idx.add({
-      title: "An Easy Way to Understand Fast Fourier Transforms",
-      excerpt: "One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world....",
-      categories: [],
-      tags: [],
-      id: 3
     });
     
   
@@ -51,7 +42,7 @@ var idx = lunr(function () {
       excerpt: "In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming....",
       categories: [],
       tags: [],
-      id: 4
+      id: 3
     });
     
   
@@ -60,7 +51,7 @@ var idx = lunr(function () {
       excerpt: "Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other...",
       categories: [],
       tags: [],
-      id: 5
+      id: 4
     });
     
   
@@ -69,7 +60,7 @@ var idx = lunr(function () {
       excerpt: "Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to...",
       categories: [],
       tags: [],
-      id: 6
+      id: 5
     });
     
   
@@ -78,7 +69,61 @@ var idx = lunr(function () {
       excerpt: "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
       categories: [],
       tags: [],
+      id: 6
+    });
+    
+  
+    idx.add({
+      title: "Python & Flask",
+      excerpt: "To begin: sudo pip install flask Flask is a good choice for a REST API because it is: Written in...",
+      categories: [],
+      tags: [],
       id: 7
+    });
+    
+  
+    idx.add({
+      title: "Async Javascript",
+      excerpt: "Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their...",
+      categories: [],
+      tags: [],
+      id: 8
+    });
+    
+  
+    idx.add({
+      title: "Asynchronous request batching and caching",
+      excerpt: "Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources...",
+      categories: [],
+      tags: [],
+      id: 9
+    });
+    
+  
+    idx.add({
+      title: "Scalability and Architectural Patterns in Node.js",
+      excerpt: "Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second...",
+      categories: [],
+      tags: [],
+      id: 10
+    });
+    
+  
+    idx.add({
+      title: "A Simple Neural Net",
+      excerpt: "Neurons A neuron is the basic unit of a neural network. A neuron takes inputs, does some math with them,...",
+      categories: [],
+      tags: [],
+      id: 11
+    });
+    
+  
+    idx.add({
+      title: "Async Initialization in Node.js",
+      excerpt: "Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example...",
+      categories: [],
+      tags: [],
+      id: 12
     });
     
   
@@ -95,7 +140,7 @@ var store = [
       {
         "title": "Pokemons,Birthdays and Cryptography",
         "url": "/cableBlog/Pokemons,Birthdays-and-Cryptography/",
-        "excerpt": "Supose you’re walking on the streets hunting Pokemons in . Your objective is to collect different types of Pokemon, where...",
+        "excerpt": "Supose you’re walking on the streets hunting Pokemons in \\(Pokemon Go\\). Your objective is to collect \\(N\\) different types of...",
         "teaser":
           
             null
@@ -117,18 +162,7 @@ var store = [
       {
         "title": "Quake III and the Fast Inverse Square Root",
         "url": "/cableBlog/Quake-and-the-Fast-Inverse-Square-Root/",
-        "excerpt": "Given a number ,write a program that calculates the inverse square root: Well, it’s not that hard: float inverse_sqrt(float x){...",
-        "teaser":
-          
-            null
-          
-      },
-    
-      
-      {
-        "title": "An Easy Way to Understand Fast Fourier Transforms",
-        "url": "/cableBlog/FastFourierTransform/",
-        "excerpt": "One of the most remarkable things about Mathematics is how abstraction can lead to real improvements in the real world....",
+        "excerpt": "Given a number \\(x\\) ,write a program that calculates the inverse square root: \\[y = \\frac{1}{\\sqrt{x}}\\] Well, it’s not that...",
         "teaser":
           
             null
@@ -173,6 +207,72 @@ var store = [
         "title": "Don't abuse the Spread Operator",
         "url": "/cableBlog/Don't-abuse-the-spread-operator/",
         "excerpt": "Here I was on my spare time doing some problems on Binary Search and I was doing this easy one...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Python & Flask",
+        "url": "/cableBlog/Python-&-Flask/",
+        "excerpt": "To begin: sudo pip install flask Flask is a good choice for a REST API because it is: Written in...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Async Javascript",
+        "url": "/cableBlog/Async-Javascript/",
+        "excerpt": "Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Asynchronous request batching and caching",
+        "url": "/cableBlog/Asynchronous-request-batching-and-caching/",
+        "excerpt": "Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Scalability and Architectural Patterns in Node.js",
+        "url": "/cableBlog/Scalibility-and-Architectural-Patterns/",
+        "excerpt": "Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "A Simple Neural Net",
+        "url": "/cableBlog/A-Simple-Neural-Net/",
+        "excerpt": "Neurons A neuron is the basic unit of a neural network. A neuron takes inputs, does some math with them,...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Async Initialization in Node.js",
+        "url": "/cableBlog/Async-Initialization-in-Node.js/",
+        "excerpt": "Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example...",
         "teaser":
           
             null

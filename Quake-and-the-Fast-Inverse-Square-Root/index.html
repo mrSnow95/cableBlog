@@ -24,7 +24,7 @@
 
 
 
-<meta name="description" content="Given a number  ,write a program that calculates the inverse square root:">
+<meta name="description" content="Given a number \(x\) ,write a program that calculates the inverse square root:">
 
 
 
@@ -38,7 +38,7 @@
 
 
 
-  <meta property="og:description" content="Given a number  ,write a program that calculates the inverse square root:">
+  <meta property="og:description" content="Given a number \(x\) ,write a program that calculates the inverse square root:">
 
 
 
@@ -220,7 +220,7 @@
     
     
       <p class="author__bio" itemprop="description">
-        Computer Engineer, just a guy that loves Technology, Programming and Math :)
+        Computer Engineer
       </p>
     
   </div>
@@ -321,7 +321,7 @@
 
   <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
     <meta itemprop="headline" content="Quake III and the Fast Inverse Square Root">
-    <meta itemprop="description" content="Given a number  ,write a program that calculates the inverse square root:">
+    <meta itemprop="description" content="Given a number \(x\) ,write a program that calculates the inverse square root:">
     <meta itemprop="datePublished" content="January 20, 2021">
     
 
@@ -340,7 +340,7 @@
 
 
 
-  4 minute read
+  6 minute read
  &nbsp;&nbsp;&nbsp;
             
           </p>
@@ -349,34 +349,34 @@
 
       <section class="page__content" itemprop="text">
         
-        <p>Given a number <script type="math/tex">x</script> ,write a program that calculates the inverse square root:</p>
+        <p>Given a number \(x\) ,write a program that calculates the inverse square root:</p>
 
-<script type="math/tex; mode=display">y = \frac{1}{\sqrt{x}}</script>
+\[y = \frac{1}{\sqrt{x}}\]
 
 <p>Well, it’s not that hard:</p>
 
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">inverse_sqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">x</span><span class="p">){</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">inverse_sqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">x</span><span class="p">){</span>
     <span class="k">return</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre></div></div>
 
 <p>So … no big deal, right ? Well, maybe not for our current processors embedded with special Floating Operation Units, but old computers with their traditional ALU’s had a hard time calculating such task of division and square root. And for old games like Doom and Quake III, calculating efficiently the inverse square root of a number made all the difference in the Physics Engine of the game. The reason for this is because Physics Engines have to perform lot’s of vector normalization in order to apply, for example, Snell’s Law of refraction correctly for lighting.</p>
 
-<p>Given a vector <script type="math/tex">(x,y,z)</script>, it’s norm is <script type="math/tex">\sqrt{x^2 + y^2 + z^2}</script> and therefore after normalization it becomes (<script type="math/tex">\frac{x}{\sqrt{x^2 + y^2 + z^2}},\frac{y}{\sqrt{x^2 + y^2 + z^2}},\frac{z}{\sqrt{x^2 + y^2 + z^2}}</script>). And for every frame of the game, hundreds of thousands of this calculations are made. So, how to efficiently calculate this ? Well, <a href="https://en.wikipedia.org/wiki/John_Carmack">Jonh Carmack</a> leading programmer of idSoftware at the development of Quake III, came up with the following algorithm used in the game (comments are from the original source code) :</p>
+<p>Given a vector \((x,y,z)\), it’s norm is \(\sqrt{x^2 + y^2 + z^2}\) and therefore after normalization it becomes (\(\frac{x}{\sqrt{x^2 + y^2 + z^2}},\frac{y}{\sqrt{x^2 + y^2 + z^2}},\frac{z}{\sqrt{x^2 + y^2 + z^2}}\)). And for every frame of the game, hundreds of thousands of this calculations are made. So, how to efficiently calculate this ? Well, <a href="https://en.wikipedia.org/wiki/John_Carmack">Jonh Carmack</a> leading programmer of idSoftware at the development of Quake III, came up with the following algorithm used in the game (comments are from the original source code) :</p>
 
-<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">Q_rsqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">number</span><span class="p">){</span>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">Q_rsqrt</span><span class="p">(</span><span class="kt">float</span> <span class="n">number</span><span class="p">){</span>
     <span class="kt">long</span> <span class="n">i</span><span class="p">;</span>
     <span class="kt">float</span> <span class="n">x2</span><span class="p">,</span><span class="n">y</span><span class="p">;</span>
     <span class="k">const</span> <span class="kt">float</span> <span class="n">threehalfs</span> <span class="o">=</span> <span class="mf">1.5</span><span class="n">F</span><span class="p">;</span>
 
     <span class="n">x2</span> <span class="o">=</span> <span class="n">number</span><span class="o">*</span><span class="mf">0.5</span><span class="n">F</span><span class="p">;</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">number</span><span class="p">;</span>
-    <span class="n">i</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">;</span>              <span class="c1">// evil floating point bit hack
-</span>    <span class="n">i</span> <span class="o">=</span> <span class="mh">0x5f3759df</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>      <span class="c1">// what the fuck ? 
-</span>    <span class="n">y</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">float</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">;</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">threehalfs</span> <span class="o">-</span> <span class="p">(</span><span class="n">x2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">));</span> <span class="c1">// 1st iteration
-</span> <span class="c1">// y = y * (threehalfs - (x2 * y * y)); // 2nd iteration, can be removed
-</span>    <span class="k">return</span> <span class="n">y</span><span class="p">;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">long</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">;</span>              <span class="c1">// evil floating point bit hack</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mh">0x5f3759df</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>      <span class="c1">// what the fuck ? </span>
+    <span class="n">y</span> <span class="o">=</span> <span class="o">*</span> <span class="p">(</span><span class="kt">float</span> <span class="o">*</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">;</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">threehalfs</span> <span class="o">-</span> <span class="p">(</span><span class="n">x2</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span><span class="p">));</span> <span class="c1">// 1st iteration</span>
+ <span class="c1">// y = y * (threehalfs - (x2 * y * y)); // 2nd iteration, can be removed</span>
+    <span class="k">return</span> <span class="n">y</span><span class="p">;</span>
 <span class="p">}</span>
 
 </code></pre></div></div>
@@ -384,49 +384,49 @@
 
 <p><strong>*How Floating Points Are Represented in 32 bits</strong></p>
 
-<p>How to represent 696969 in binary ? Well, its just <script type="math/tex">0000</script> <script type="math/tex">0000</script> <script type="math/tex">0000</script> <script type="math/tex">1010</script> <script type="math/tex">1010</script> <script type="math/tex">0010</script> <script type="math/tex">1000</script> <script type="math/tex">1001</script>. Now what about <script type="math/tex">69.6969</script> ? The Standard way is how the IEEE 754 describes: Exactly hot we represent in scientific notation !</p>
+<p>How to represent 696969 in binary ? Well, its just \(0000\) \(0000\) \(0000\) \(1010\) \(1010\) \(0010\) \(1000\) \(1001\). Now what about \(69.6969\) ? The Standard way is how the IEEE 754 describes: Exactly hot we represent in scientific notation !</p>
 
-<p>For example, in base 10: <script type="math/tex">23000 = 2.3 * 10^{4}</script> , <script type="math/tex">0.0034 = 3.4 * 10 ^ {-3}</script>
-And in binary: <script type="math/tex">11000 = 1.1 * 2 ^ {4}</script> , <script type="math/tex">0.0101 = 1.01 * 2^{-3}</script>
-According to the triple IEE 754 Standard, the first bit represents the sign ( <script type="math/tex">+</script> or <script type="math/tex">-</script> ), the next 8 bits represents the exponent, and the next 23 bits represents the Mantissa, the number that comes before the exponent in the binary scientific representation. The following picture makes more clear:</p>
+<p>For example, in base 10: \(23000 = 2.3 * 10^{4}\) , \(0.0034 = 3.4 * 10 ^ {-3}\)
+And in binary: \(11000 = 1.1 * 2 ^ {4}\) , \(0.0101 = 1.01 * 2^{-3}\)
+According to the triple IEE 754 Standard, the first bit represents the sign ( \(+\) or \(-\) ), the next 8 bits represents the exponent, and the next 23 bits represents the Mantissa, the number that comes before the exponent in the binary scientific representation. The following picture makes more clear:</p>
 
-<p><img src="/assets/images/bin.png" alt="My helpful screenshot" /></p>
+<p><img src="../assets/images/bin.png" alt="My helpful screenshot" /></p>
 
-<p>That’s how the standard specifies how to interpret these 32 bits for Float Numbers. And thererefore, to get the actual number from these 32 bits, we calculate <script type="math/tex">M</script>, from the 23 first bits, <script type="math/tex">E</script>, from the next 8, and finally the last sign, <script type="math/tex">S</script>, and plug these guys in the formula:</p>
+<p>That’s how the standard specifies how to interpret these 32 bits for Float Numbers. And thererefore, to get the actual number from these 32 bits, we calculate \(M\), from the 23 first bits, \(E\), from the next 8, and finally the last sign, \(S\), and plug these guys in the formula:</p>
 
-<script type="math/tex; mode=display">(-1)^{S} * (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}</script>
+\[(-1)^{S} * (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}\]
 
-<p>The <script type="math/tex">E - 127</script> is necessary to calculate negative exponents, since <script type="math/tex">E</script> goes from <script type="math/tex">0</script> to  <script type="math/tex">255</script> ,we can have the interval <script type="math/tex">[ -127,128 ]</script>.</p>
+<p>The \(E - 127\) is necessary to calculate negative exponents, since \(E\) goes from \(0\) to  \(255\) ,we can have the interval \([ -127,128 ]\).</p>
 
 <p>Since we are calculating positive floating point number for the problem of vector normalization (all guys are squared up), we can leave the representation just as</p>
 
-<script type="math/tex; mode=display">F =  (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}</script>
+\[F =  (1 + \frac{M}{2^{23}}) * 2 ^ {E - 127}\]
 
-<p>Now for no particular reason, let’s calculate <script type="math/tex">log(F)</script> , in base 2:</p>
+<p>Now for no particular reason, let’s calculate \(log(F)\) , in base 2:</p>
 
-<script type="math/tex; mode=display">log(F) = log((1 + \frac{M}{2^{23}}) * 2 ^ {E - 127})</script>
+\[log(F) = log((1 + \frac{M}{2^{23}}) * 2 ^ {E - 127})\]
 
-<script type="math/tex; mode=display">log(F) = (E - 127) + log((1 + \frac{M}{2^{23}}))</script>
+\[log(F) = (E - 127) + log((1 + \frac{M}{2^{23}}))\]
 
-<p>For the term <script type="math/tex">log((1 + \frac{M}{2^{23}}))</script> , since <script type="math/tex">M</script> belong to <script type="math/tex">[ 0,1 ]</script>,
-we can approximate the term using the Taylor Approximation: <script type="math/tex">log(1+x) \approx 1+x + \mu</script> , where is a <script type="math/tex">\mu</script> is a  <script type="math/tex">\mathcal{O}(x^2)</script> correction term. And therefore, rearranging terms:</p>
+<p>For the term \(log((1 + \frac{M}{2^{23}}))\) , since \(M\) belong to \([ 0,1 ]\),
+we can approximate the term using the Taylor Approximation: \(log(1+x) \approx 1+x + \mu\) , where is a \(\mu\) is a  \(\mathcal{O}(x^2)\) correction term. And therefore, rearranging terms:</p>
 
-<script type="math/tex; mode=display">log(F) = \frac{M + 2^{23} * E}{2 ^{23}} + \mu - 127</script>
+\[log(F) = \frac{M + 2^{23} * E}{2 ^{23}} + \mu - 127\]
 
-<p>The original programmers of Quake calculated that <script type="math/tex">\mu = 0.04505</script> was a optimal <script type="math/tex">\mu</script> for approximating the original function.</p>
+<p>The original programmers of Quake calculated that \(\mu = 0.04505\) was a optimal \(\mu\) for approximating the original function.</p>
 
-<p>Now, a important note, <script type="math/tex">M + 2^{23}*E</script> is <strong>exactly</strong> how you represent this float number in binary:</p>
+<p>Now, a important note, \(M + 2^{23}*E\) is <strong>exactly</strong> how you represent this float number in binary:</p>
 
-<p><img src="/assets/images/bin2.png" alt="My helpful screenshot" /></p>
+<p><img src="../assets/images/bin2.png" alt="My helpful screenshot" /></p>
 
 <p><strong>The Evil Bit Hack</strong></p>
 
 <p>We can’t do bit tricks with floating numbers, since they are tied to IEEE 754. But with integers we can:</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="n">p</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-<span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 2 , shift left divide by 2
-</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 4,  shift right multiply by 2
-</span></code></pre></div></div>
+<span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// 2 , shift left divide by 2</span>
+<span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 4,  shift right multiply by 2</span>
+</code></pre></div></div>
 
 <p>So how can we trick C to make bit manipulation with floats ? 
 We can’t just do</p>
@@ -436,23 +436,23 @@ We can’t just do</p>
 </code></pre></div></div>
 <p>Because we lose information about the floating number in the convertion.</p>
 
-<p>Here’s the magic. Take for example <script type="math/tex">3.33</script>, with binary representation:</p>
+<p>Here’s the magic. Take for example \(3.33\), with binary representation:</p>
 
-<script type="math/tex; mode=display">3.33 = 0 10000000 10101010001111010111000</script>
+\[3.33 = 0 10000000 10101010001111010111000\]
 
 <p>if we make a hard conversion, it becomes:</p>
 
-<script type="math/tex; mode=display">3 = 00000000 00000000 00000000 0000011</script>
+\[3 = 00000000 00000000 00000000 0000011\]
 
-<p>But, what if the C language inteprets <script type="math/tex">0 10000000 10101010001111010111000</script> as a integer, not a float ? Then it would interpreted as <script type="math/tex">1079320248</script>. How to do this?
+<p>But, what if the C language inteprets \(0 10000000 10101010001111010111000\) as a integer, not a float ? Then it would interpreted as \(1079320248\). How to do this?
 We trick C:</p>
 
 <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">3.33</span>
 <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">f</span><span class="p">;</span>
-<span class="n">printf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">i</span><span class="p">);</span> <span class="c1">//prints 1079320248
-</span></code></pre></div></div>
+<span class="n">printf</span><span class="p">(</span><span class="s">"%d"</span><span class="p">,</span><span class="n">i</span><span class="p">);</span> <span class="c1">//prints 1079320248</span>
+</code></pre></div></div>
 
-<p>We first fool C to think that the adress where <script type="math/tex">f</script> is located points to a int, not a float, and to extract this information, we point again, thats exactly whats going on line 2. Now we can make bit tricks with the binary representation of floats.</p>
+<p>We first fool C to think that the adress where \(f\) is located points to a int, not a float, and to extract this information, we point again, thats exactly whats going on line 2. Now we can make bit tricks with the binary representation of floats.</p>
 
 <p>Finally, Knowing all of this, the algorithm can be understood.</p>
 
@@ -460,29 +460,29 @@ We trick C:</p>
 
 <p>We want to calculate</p>
 
-<script type="math/tex; mode=display">y = \frac{1}{\sqrt{x}}</script>
+\[y = \frac{1}{\sqrt{x}}\]
 
 <p>Applying log to both sides:</p>
 
-<script type="math/tex; mode=display">log(y) = log(x^{\frac{-1}{2}})</script>
+\[log(y) = log(x^{\frac{-1}{2}})\]
 
-<script type="math/tex; mode=display">log(y) = -1\frac{1}{2} * log(x)</script>
+\[log(y) = -1\frac{1}{2} * log(x)\]
 
 <p>using the previous log representation:</p>
 
-<script type="math/tex; mode=display">\frac{M_{y} + 2^{23} * E_{y}}{2 ^{23}} + \mu - 127 = -\frac{1}{2} * (\frac{M_{x} + 2^{23} * E_{x}}{2 ^{23}} + \mu - 127)</script>
+\[\frac{M_{y} + 2^{23} * E_{y}}{2 ^{23}} + \mu - 127 = -\frac{1}{2} * (\frac{M_{x} + 2^{23} * E_{x}}{2 ^{23}} + \mu - 127)\]
 
 <p>After a long boring rearrangement of terms, we have:</p>
 
-<script type="math/tex; mode=display">M_{y} + 2^{23} * E_{y} = \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * (M_{x} + 2^{23} * E_{x})</script>
+\[M_{y} + 2^{23} * E_{y} = \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * (M_{x} + 2^{23} * E_{x})\]
 
-<p>Considering that <script type="math/tex">M_{y} + 2^{23} * E_{y}</script> is just the binary representation of <script type="math/tex">y</script>, (the same for <script type="math/tex">x</script>) then:</p>
+<p>Considering that \(M_{y} + 2^{23} * E_{y}\) is just the binary representation of \(y\), (the same for \(x\)) then:</p>
 
-<script type="math/tex; mode=display">y =  \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * x</script>
+\[y =  \frac{3}{2} * 2^{23} * (127 - \mu) -\frac{1}{2} * x\]
 
-<p>Calculating <script type="math/tex">\frac{3}{2} * 2^{23} * (127 - \mu)</script> for <script type="math/tex">\mu = 0.04505</script> and converting to hexadecimal:</p>
+<p>Calculating \(\frac{3}{2} * 2^{23} * (127 - \mu)\) for \(\mu = 0.04505\) and converting to hexadecimal:</p>
 
-<script type="math/tex; mode=display">y =  0x5f3759df - \frac{x}{2}</script>
+\[y =  0x5f3759df - \frac{x}{2}\]
 
 <p>And therefore we transformed the original function involving division and square rooting to one only involving subtraction and bit shifting! we can do the shift because of the evil bit trick :)</p>
 
@@ -499,33 +499,33 @@ We trick C:</p>
 
 <p>The following image makes it more clear:</p>
 
-<p><img src="/assets/images/newton.png" alt="My helpful screenshot" /></p>
+<p><img src="../assets/images/newton.png" alt="My helpful screenshot" /></p>
 
-<p>So, given a number <script type="math/tex">x</script>, we iteratively calculate new $x$’s until we have <script type="math/tex">f(x) \approx 0.0</script> in the following way:</p>
+<p>So, given a number \(x\), we iteratively calculate new $x$’s until we have \(f(x) \approx 0.0\) in the following way:</p>
 
-<script type="math/tex; mode=display">f\prime(x) = \frac{dy}{dx}</script>
+\[f\prime(x) = \frac{dy}{dx}\]
 
-<script type="math/tex; mode=display">dx = \frac{dy}{f\prime(x)}</script>
+\[dx = \frac{dy}{f\prime(x)}\]
 
-<script type="math/tex; mode=display">x_{n} - x_{n-1} = \frac{f(x)}{f\prime(x)}</script>
+\[x_{n} - x_{n-1} = \frac{f(x)}{f\prime(x)}\]
 
-<script type="math/tex; mode=display">x_{n} = x_{n-1} + \frac{f(x)}{f\prime(x)}</script>
+\[x_{n} = x_{n-1} + \frac{f(x)}{f\prime(x)}\]
 
-<p><script type="math/tex">\frac{1}{\sqrt{x}}</script> is root for:</p>
+<p>\(\frac{1}{\sqrt{x}}\) is root for:</p>
 
-<p>For <script type="math/tex">f(y) = \frac{1}{y^{2}} - x</script></p>
-
-<p>So,</p>
-
-<script type="math/tex; mode=display">\frac{df}{dy} = -2 * y^{-3}</script>
+<p>For \(f(y) = \frac{1}{y^{2}} - x\)</p>
 
 <p>So,</p>
 
-<script type="math/tex; mode=display">y_{n} = y_{n-1} + \frac{y_{n-1}^{-2} - x}{-2*y_{n-1}^{-3}}</script>
+\[\frac{df}{dy} = -2 * y^{-3}\]
 
-<script type="math/tex; mode=display">y_{n} = y_{n-1} - (-0.5 * y_{n-1} + 0.5 * x * y_{n-1}^{3} )</script>
+<p>So,</p>
 
-<script type="math/tex; mode=display">y_{n} = y_{n-1} * (1.5 - 0.5 * x * y_{n-1} * y_{n-1})</script>
+\[y_{n} = y_{n-1} + \frac{y_{n-1}^{-2} - x}{-2*y_{n-1}^{-3}}\]
+
+\[y_{n} = y_{n-1} - (-0.5 * y_{n-1} + 0.5 * x * y_{n-1}^{3} )\]
+
+\[y_{n} = y_{n-1} * (1.5 - 0.5 * x * y_{n-1} * y_{n-1})\]
 
 <p>Which is exactly the last line of code. Since we already have a good approximation, one iteration is enough. And that’s it !!! Personally this was a very cool trick to learn, how algorithms could overcome the hardware limitations at the time in smart ways :)</p>
 
@@ -620,7 +620,7 @@ Sales table:
 ">Previous</a>
     
     
-      <a href="/cableBlog/FastFourierTransform/" class="pagination--pager" title="An Easy Way to Understand Fast Fourier Transforms
+      <a href="/cableBlog/Computational-Geometry-in-C++/" class="pagination--pager" title="Computational Geometry in C++
 ">Next</a>
     
   </nav>
@@ -645,13 +645,13 @@ Sales table:
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/cableBlog/Don't-abuse-the-spread-operator/" rel="permalink">Don’t abuse the Spread Operator
+        <a href="/cableBlog/Async-Initialization-in-Node.js/" rel="permalink">Async Initialization in Node.js
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-30T00:00:00+01:00">June 30, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -659,12 +659,11 @@ Sales table:
 
 
 
-  1 minute read
+  8 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">Here I was on my spare time doing some problems on Binary Search and I was doing this easy one
-, which is basically “Given a list of integers nums, find all ...</p>
+    <p class="archive__item-excerpt" itemprop="description">Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example is tryi...</p>
   </article>
 </div>
 
@@ -678,13 +677,13 @@ Sales table:
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/cableBlog/Node.js-and-MySQL/" rel="permalink">Node.js and MySQL
+        <a href="/cableBlog/A-Simple-Neural-Net/" rel="permalink">A Simple Neural Net
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -692,11 +691,13 @@ Sales table:
 
 
 
-  11 minute read
+  7 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to make use of a Node.js package that handles the low lev...</p>
+    <p class="archive__item-excerpt" itemprop="description">Neurons
+
+</p>
   </article>
 </div>
 
@@ -710,13 +711,13 @@ Sales table:
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
+        <a href="/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -724,11 +725,11 @@ Sales table:
 
 
 
-  9 minute read
+  5 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
   </article>
 </div>
 
@@ -742,13 +743,13 @@ Sales table:
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/cableBlog/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+        <a href="/cableBlog/Asynchronous-request-batching-and-caching/" rel="permalink">Asynchronous request batching and caching
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -756,17 +757,18 @@ Sales table:
 
 
 
-  4 minute read
+  5 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
+    <p class="archive__item-excerpt" itemprop="description">Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources such as web pages, images, and sty...</p>
   </article>
 </div>
 
         
       </div>
     </div>
+  
   
 </div>
 
