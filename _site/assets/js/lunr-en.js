@@ -74,11 +74,47 @@ var idx = lunr(function () {
     
   
     idx.add({
-      title: "Words in Text Using TF-IDF",
-      excerpt: "TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in...",
+      title: "Python & Flask",
+      excerpt: "To begin: sudo pip install flask Flask is a good choice for a REST API because it is: Written in...",
       categories: [],
       tags: [],
       id: 7
+    });
+    
+  
+    idx.add({
+      title: "B Trees",
+      excerpt: "\n",
+      categories: [],
+      tags: [],
+      id: 8
+    });
+    
+  
+    idx.add({
+      title: "Async Javascript",
+      excerpt: "Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their...",
+      categories: [],
+      tags: [],
+      id: 9
+    });
+    
+  
+    idx.add({
+      title: "Asynchronous request batching and caching",
+      excerpt: "Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources...",
+      categories: [],
+      tags: [],
+      id: 10
+    });
+    
+  
+    idx.add({
+      title: "CPU Bound",
+      excerpt: "\n",
+      categories: [],
+      tags: [],
+      id: 11
     });
     
   
@@ -87,25 +123,34 @@ var idx = lunr(function () {
       excerpt: "Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second...",
       categories: [],
       tags: [],
-      id: 8
+      id: 12
     });
     
   
     idx.add({
-      title: "2021-06-06-A Simple Neural Net",
-      excerpt: "Neural Networks aren’t that complicated! The term “neural network” gets used as a buzzword a lot, but in reality they’re...",
+      title: "A Simple Neural Net",
+      excerpt: "Neurons A neuron is the basic unit of a neural network. A neuron takes inputs, does some math with them,...",
       categories: [],
       tags: [],
-      id: 9
+      id: 13
     });
     
   
     idx.add({
-      title: "2021-06-06-A Vector Space Indexing Engine in Python",
-      excerpt: "A simple Search Engine its a pretty simple thing to do. Here is an example indexer using Python. The first...",
+      title: "Async Initialization in Node.js",
+      excerpt: "Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example...",
       categories: [],
       tags: [],
-      id: 10
+      id: 14
+    });
+    
+  
+    idx.add({
+      title: "Multivariable Calculus",
+      excerpt: "For multivariable integrals, the true story starts with a change of coordinates. Let \\(f : D ⊂ R ^ n...",
+      categories: [],
+      tags: [],
+      id: 15
     });
     
   
@@ -197,9 +242,53 @@ var store = [
     
       
       {
-        "title": "Words in Text Using TF-IDF",
-        "url": "http://localhost:4000/cableBlog/Words-in-Text-Using-TF-IDF/",
-        "excerpt": "TF-IDF stands for “Term Frequency, Inverse Document Frequency.” It’s a way to score the importance of words (or “terms”) in...",
+        "title": "Python & Flask",
+        "url": "http://localhost:4000/cableBlog/Python-&-Flask/",
+        "excerpt": "To begin: sudo pip install flask Flask is a good choice for a REST API because it is: Written in...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "B Trees",
+        "url": "http://localhost:4000/cableBlog/B-Trees/",
+        "excerpt": "\n",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Async Javascript",
+        "url": "http://localhost:4000/cableBlog/Async-Javascript/",
+        "excerpt": "Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Asynchronous request batching and caching",
+        "url": "http://localhost:4000/cableBlog/Asynchronous-request-batching-and-caching/",
+        "excerpt": "Caching plays a critical role in high load applications, and it’s used almost everywhere on the web, from static resources...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "CPU Bound",
+        "url": "http://localhost:4000/cableBlog/CPU-Bound/",
+        "excerpt": "\n",
         "teaser":
           
             null
@@ -219,9 +308,9 @@ var store = [
     
       
       {
-        "title": "2021-06-06-A Simple Neural Net",
+        "title": "A Simple Neural Net",
         "url": "http://localhost:4000/cableBlog/A-Simple-Neural-Net/",
-        "excerpt": "Neural Networks aren’t that complicated! The term “neural network” gets used as a buzzword a lot, but in reality they’re...",
+        "excerpt": "Neurons A neuron is the basic unit of a neural network. A neuron takes inputs, does some math with them,...",
         "teaser":
           
             null
@@ -230,9 +319,20 @@ var store = [
     
       
       {
-        "title": "2021-06-06-A Vector Space Indexing Engine in Python",
-        "url": "http://localhost:4000/cableBlog/A-Vector-Space-Indexing-Engine-in-Python/",
-        "excerpt": "A simple Search Engine its a pretty simple thing to do. Here is an example indexer using Python. The first...",
+        "title": "Async Initialization in Node.js",
+        "url": "http://localhost:4000/cableBlog/Async-Initialization-in-Node.js/",
+        "excerpt": "Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example...",
+        "teaser":
+          
+            null
+          
+      },
+    
+      
+      {
+        "title": "Multivariable Calculus",
+        "url": "http://localhost:4000/cableBlog/Multivariable-Calculus/",
+        "excerpt": "For multivariable integrals, the true story starts with a change of coordinates. Let \\(f : D ⊂ R ^ n...",
         "teaser":
           
             null

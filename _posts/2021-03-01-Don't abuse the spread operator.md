@@ -64,5 +64,5 @@ class Solution {
 ```
 
 
-Which is not as readable as the reduce/spread pattern , but it's way way more efficient, since it's approximately linear. With a little Google Search, i've found this [post](https://medium.com/@pouyae/what-is-the-es6-spread-operator-and-why-you-shouldnt-use-it-57c056078ed9), and I totally agree with it. Sometimes we have to sacrifice a readable code for a faster one :)
+Which is not as readable as the reduce/spread pattern , but it's way way more efficient, since it's approximately linear.[post](https://medium.com/@pouyae/what-is-the-es6-spread-operator-and-why-you-shouldnt-use-it-57c056078ed9).
 

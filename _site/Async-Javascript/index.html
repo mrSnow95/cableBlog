@@ -1,0 +1,758 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.8.0 by Michael Rose
+  Copyright 2017 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE.txt
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin SEO -->
+
+
+
+
+
+
+
+
+
+<title>Async Javascript - pi_squared</title>
+
+
+
+
+<meta name="description" content="Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their result. The web, however, is pratically asynchronous. This means that they often have to stop computing while waiting for data to arrive or for some event to occur. JavaScript programs in a web browser are typically event-driven, meaning that they wait for the user to click or tap before they actually do anything. And JavaScript-based servers typically wait for client requests to arrive over the network before they do anything.">
+
+
+
+
+<meta name="author" content="Bruno Neves">
+
+<meta property="og:locale" content="en">
+<meta property="og:site_name" content="pi_squared">
+<meta property="og:title" content="Async Javascript">
+
+
+  <link rel="canonical" href="http://localhost:4000/cableBlog/Async-Javascript/">
+  <meta property="og:url" content="http://localhost:4000/cableBlog/Async-Javascript/">
+
+
+
+  <meta property="og:description" content="Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their result. The web, however, is pratically asynchronous. This means that they often have to stop computing while waiting for data to arrive or for some event to occur. JavaScript programs in a web browser are typically event-driven, meaning that they wait for the user to click or tap before they actually do anything. And JavaScript-based servers typically wait for client requests to arrive over the network before they do anything.">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+
+
+
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-05-30T00:00:00+01:00">
+
+
+
+
+
+
+
+
+  <script type="application/ld+json">
+    {
+      "@context" : "http://schema.org",
+      "@type" : "Person",
+      "name" : "",
+      "url" : "http://localhost:4000/cableBlog",
+      "sameAs" : null
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- end SEO -->
+
+
+<link href="http://localhost:4000/cableBlog/feed.xml" type="application/atom+xml" rel="alternate" title="pi_squared Feed">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/cableBlog/assets/css/main.css">
+
+<!--[if lte IE 9]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+<!-- end custom head snippets -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+
+  </head>
+
+  <body class="layout--single">
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        <a class="site-title" href="http://localhost:4000/cableBlog/">pi_squared</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/cableBlog/about/" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/cableBlog/posts/" >Posts</a>
+            </li>
+          
+        </ul>
+        
+        <button class="greedy-nav__toggle" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+<div itemscope itemtype="http://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="http://localhost:4000/cableBlog/assets/images/profile-1.jpg" alt="Bruno Neves" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Bruno Neves</h3>
+    
+    
+      <p class="author__bio" itemprop="description">
+        Computer Engineer
+      </p>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="http://schema.org/Place">
+          <i class="fa fa-fw fa-map-marker" aria-hidden="true"></i> <span itemprop="name">Braga, Portugal</span>
+        </li>
+      
+
+      
+
+      
+        <li>
+          <a href="mailto:neves.brunobr@gmail.com">
+            <meta itemprop="email" content="neves.brunobr@gmail.com" />
+            <i class="fa fa-fw fa-envelope-square" aria-hidden="true"></i> Email
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://instagram.com/brunosszaa" itemprop="sameAs">
+            <i class="fa fa-fw fa-instagram" aria-hidden="true"></i> Instagram
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+        <li>
+          <a href="https://github.com/mrSnow95" itemprop="sameAs">
+            <i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub
+          </a>
+        </li>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs">
+      <i class="fa fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Async Javascript">
+    <meta itemprop="description" content="Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their result. The web, however, is pratically asynchronous. This means that they often have to stop computing while waiting for data to arrive or for some event to occur. JavaScript programs in a web browser are typically event-driven, meaning that they wait for the user to click or tap before they actually do anything. And JavaScript-based servers typically wait for client requests to arrive over the network before they do anything.">
+    <meta itemprop="datePublished" content="May 30, 2021">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 class="page__title" itemprop="headline">Async Javascript
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  9 minute read
+ &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Computer programs, such as scientific simulations, are CPU Bound: they run continuously, with no pause, until they have computed their result. The web, however, is pratically asynchronous. This means that they often have to stop computing while waiting for data to arrive or for some event to occur. JavaScript programs in a web browser are typically event-driven, meaning that they wait for the user to click or tap before they actually do anything. And JavaScript-based servers typically wait for client requests to arrive over the network before they do anything.</p>
+
+<p>Async programming is commonplace in JavaScript. Promises are objects that represent the not-yet- available result of an asynchronous operation. The keywords async and await provide new syntax that simplifies asynchronous programming by allowing you to structure your Promise based code as if it was synchronous. Finally, asynchronous iterators and the for/await loop allow you to work with streams of asynchronous events using simple loops that appear synchronous.</p>
+
+<p>Ironically, even though JavaScript provides these features for working with asynccode, there are no built-in features that are themselves asynchronous.</p>
+
+<p><strong>Asynchronous Programming with Callbacks</strong>:</p>
+
+<p>Fundamentally, async programming in JS is done with callbacks. A callback is a function that you write and then pass to some other function. That other function then invokes (“calls back”) your function when some condition is met or some (asynchronous) event occurs. The invocation of the callback function you provide notifies you of the condition or event, and sometimes, the invocation will include function arguments that provide additional details.</p>
+
+<p><strong>Timers</strong></p>
+
+<p>One of the simplest kinds of asynchrony is when you want to run some code after a certain amount of time has elapsed.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">checkForUpdates</span><span class="p">,</span> <span class="mi">60000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The first argument to setTimeout() is a function and the second is a time interval measured in milliseconds. In the preceding code, a hypothetical checkForUpdates() function will be called 1 minute after the setTimeout() call. checkForUpdates() is a callback function that your program might define, and setTimeout() is the function that you invoke to register your callback function and specify under what asynchronous conditions it should be invoked.</p>
+
+<p>To run repeatedly</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">updateIntervalId</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="nx">checkForUpdates</span><span class="p">,</span> <span class="mi">60000</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">stopCheckingForUpdates</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">updateIntervalId</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Events</strong></p>
+
+<p>Client-side JavaScript programs are event driven: rather than running some kind of predetermined computation, they typically wait for the user to do something and then respond to the user’s actions. The web browser generates an event when the user presses a key on the keyboard, moves the mouse, clicks a mouse button, or touches a touchscreen device. Event-driven JavaScript programs register callback functions for specified types of events in specified contexts, and the web browser invokes those functions whenever the specified events occur. These callback functions are called event handlers or event listeners, and they are registered with addEventListener():</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c1">// Ask the web browser to return an object representing the HTML</span>
+<span class="c1">// &lt;button&gt; element that matches this CSS selector</span>
+<span class="kd">let</span> <span class="nx">okay</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#confirmUpdateDialog button.okay</span><span class="dl">'</span><span class="p">);</span>
+<span class="c1">// Now register a callback function to be invoked when the user // clicks on that button.</span>
+<span class="nx">okay</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="nx">applyUpdate</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<p>applyUpdate() is a callback function that we assume is implemented somewhere else. The call to document.querySelector() returns an object that represents a single specified element in the web page. We call addEventListener() on that element to register our callback. Then the first argument to addEventListener() is a string that specifies the kind of event we’re interested in—a mouse click or touchscreen tap. If the user clicks or taps on that specific element of the web page, then the browser will invoke our applyUpdate() callback function, passing an object that includes details (the time, the mouse pointer coordinates…) .</p>
+
+<p><strong>Network Events</strong></p>
+
+<p>Another common source of async in JS are network requests. JavaScript running in the browser can fetch data from a web server with code like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getCurrentVersionNumber</span><span class="p">(</span><span class="nx">versionCallback</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="kd">let</span> <span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">http://www.example.com/api/version</span><span class="dl">"</span><span class="p">);</span> 
+    <span class="nx">request</span><span class="p">.</span><span class="nx">send</span><span class="p">();</span>
+    <span class="c1">// Register a callback that will be invoked when the response arrives</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// If HTTP status is good, get version number and call callback.</span>
+            <span class="kd">let</span> <span class="nx">currentVersion</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span> 
+            <span class="nx">versionCallback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">currentVersion</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// Otherwise report an error to the callback </span>
+            <span class="nx">versionCallback</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusText</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+        <span class="p">}</span> 
+    <span class="p">}</span>
+    <span class="c1">// Register another callback that will be invoked for network errors</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">ontimeout</span> <span class="o">=</span> <span class="nx">e</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">versionCallback</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span> <span class="p">};</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Client-side JavaScript code can use the XMLHttpRequest class and a callback functions to make HTTP requests and asynchronously handle the server’s response when it arrives. The getCurrentVersionNumber() function defined here  makes an HTTP request and defines event handlers that will be invoked when the server’s response is received or when a timeout or other error causes the request to fail.</p>
+
+<p>The code example above does not call addEventListener(). For most web APIs, event handlers can be defined by invoking addEventListener() on the object generating the event and passing the name of the event of interest along with the callback function. Typically, though, you can also register a single event listener by assigning it directly to a property of the object. Assigning functions to the onload, onerror, and ontimeout properties. By convention, event listener properties like these always have names that begin with on. addEventListener() is the more flexible technique because it allows for multiple event handlers.</p>
+
+<p><strong>Callbacks and Events in Node</strong></p>
+
+<p>The Node.js server-side JavaScript environment is deeply asynchronous and defines many APIs that use callbacks and events. The default API for reading the contents of a file, for example, is asynchronous and invokes a callback function when the contents of the file have been read:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// The "fs" module has filesystem-related APIs </span>
+<span class="kd">let</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="c1">// An object to hold options for our program</span>
+    <span class="c1">// default options would go here</span>
+<span class="p">};</span>
+    <span class="c1">// Read a configuration file, then call the callback function</span>
+<span class="kd">let</span> <span class="nx">cb</span> <span class="o">=</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">text</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> 
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// If there was an error, display a warning, but continue</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="dl">"</span><span class="s2">Could not read config file:</span><span class="dl">"</span><span class="p">,</span> <span class="nx">err</span><span class="p">);</span> 
+    <span class="p">}</span>
+    <span class="k">else</span><span class="p">{</span>
+    <span class="c1">// Otherwise, parse the file contents and assign to the options object</span>
+        <span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">text</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="c1">// In either case, we can now start running the program</span>
+    <span class="nx">startProgram</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+<span class="p">}</span>    
+
+<span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="dl">"</span><span class="s2">config.json</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">utf-8</span><span class="dl">"</span><span class="p">,</span> <span class="nx">cb</span><span class="p">);</span>
+
+</code></pre></div></div>
+
+<p>Node’s fs.readFile() function takes a two-parameter callback as its last argument. It reads the specified file asynchronously and then invokes the callback. If the file was read successfully, it passes the file contents as the second callback argument. If there was an error, it passes the error as the first callback argument.</p>
+
+<p>Node also defines a number of event-based APIs. The following function shows how to make an HTTP request for the contents of a URL in Node. It has two layers of asynchronous code handled with event listeners. Notice that Node uses an on() method to register event listeners instead of addEventListener():</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">https</span><span class="dl">"</span><span class="p">);</span>
+    <span class="c1">// Read the text content of the URL and asynchronously pass it to the callback.</span>
+<span class="kd">function</span> <span class="nx">getText</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Start an HTTP GET request for the URL </span>
+    <span class="nx">request</span> <span class="o">=</span> <span class="nx">https</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+    <span class="c1">// Register a function to handle the "response" event.</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">response</span><span class="dl">"</span><span class="p">,</span> <span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// The response event means that response headers have been received </span>
+        <span class="kd">let</span> <span class="nx">httpStatus</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">;</span>
+            
+        <span class="c1">// The body of the HTTP response has not been received yet.</span>
+        <span class="c1">// So we register more event handlers to to be called when it arrives. </span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">setEncoding</span><span class="p">(</span><span class="dl">"</span><span class="s2">utf-8</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// We're expecting Unicode text</span>
+        <span class="kd">let</span> <span class="nx">body</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span> <span class="c1">// which we will accumulate here.</span>
+        <span class="c1">// This event handler is called when a chunk of the body is ready</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">data</span><span class="dl">"</span><span class="p">,</span> <span class="nx">chunk</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">body</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span> <span class="p">});</span>
+        <span class="c1">// This event handler is called when the response is complete</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">end</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span> 
+            <span class="k">if</span> <span class="p">(</span><span class="nx">httpStatus</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span> 
+                <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">body</span><span class="p">);</span>
+                <span class="c1">// If the HTTP response was good</span>
+                <span class="c1">// Pass response body to the callback</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">callback</span><span class="p">(</span><span class="nx">httpStatus</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+            <span class="p">}</span> 
+        <span class="p">});</span>
+    <span class="p">});</span>
+    <span class="c1">// We also register an event handler for lower-level network errors</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span> 
+        <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="kc">null</span><span class="p">)</span>
+    <span class="p">})</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><strong>Promises</strong></p>
+
+<p>A Promise is an object that represents the result of an asynchronous computation. That result may or may not be ready yet, and the Promise API is intentionally vague about this: there is no way to synchronously get the value of a Promise; you can only ask the Promise to call a callback function when the value is ready. If you are defining an asynchronous API , but want to make it Promise-based, omit the callback argument, and instead return a Promise object. The caller can then register one or more callbacks on this Promise object, and they will be invoked when the asynchronous computation is done.</p>
+
+<p>At the simplest level, Promises are just an alternative way of working with callbacks. However, there are practical benefits to using them. One real problem with callback- based asynchronous programming is that it is common to end up with callbacks inside callbacks inside callbacks, with lines of code so highly indented that it is diffi‐ cult to read. Promises allow this kind of nested callback to be re-expressed as a more linear Promise chain that tends to be easier to read and easier to reason about.</p>
+
+<p>Promises seem simple at first, and the basic use case for Promises is, in fact, straightforward and simple. But they can become confusing for anything beyond the simplest use cases. Promises are a powerful idiom for asynchronous programming, but it’s necessary to understand them deeply to use them correctly and confidently</p>
+
+<p><strong>Using Promises</strong></p>
+
+<p>One of the most important benefits of Promises is that they provide a natural way to express a sequence of asynchronous operations as a linear chain of then() method invocations, without having to nest each operation within the callback of the previous one. Here, for example, is a hypothetical Promise chain:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fetch</span><span class="p">(</span><span class="nx">documentURL</span><span class="p">)</span> <span class="c1">// Make an HTTP request</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span> <span class="c1">// Ask for the JSON body of the response </span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nb">document</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="c1">// When we get the parsed JSON</span>
+        <span class="k">return</span> <span class="nx">render</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span> <span class="c1">// display the document to the user </span>
+    <span class="p">})</span>  
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">rendered</span> <span class="o">=&gt;</span> <span class="p">{</span>         <span class="c1">// When we get the rendered document</span>
+        <span class="nx">cacheInDatabase</span><span class="p">(</span><span class="nx">rendered</span><span class="p">);</span>   <span class="c1">// cache it in the local database.</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="o">=&gt;</span> <span class="nx">handle</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span> <span class="c1">// Handle any errors that occur  </span>
+</code></pre></div></div>
+
+<p>Another example:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">"</span><span class="s2">/api/user/profile</span><span class="dl">"</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// When the promise resolves, we have status and headers if (response.ok &amp;&amp;</span>
+        <span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">"</span><span class="s2">Content-Type</span><span class="dl">"</span><span class="p">)</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">application/json</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// What can we do here? We don't actually have the response body yet.</span>
+<span class="p">}</span> <span class="p">});</span>
+</code></pre></div></div>
+
+<p>When the Promise returned by fetch() is fulfilled, it passes a Response object to the function you passed to its then() method. This response object gives you access to request status and headers, and it also defines methods like text() and json(), which give you access to the body of the response in text and JSON-parsed forms, respectively. But although the initial Promise is fulfilled, the body of the response may not yet have arrived. So these text() and json() methods for accessing the body of the response themselves return Promises. Here’s a naive way of using fetch() and the response.json() method to get the body of an HTTP response:</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-05-30T00:00:00+01:00">May 30, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Async+Javascript%20http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FAsync-Javascript%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FAsync-Javascript%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FAsync-Javascript%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FAsync-Javascript%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/cableBlog/B-Trees/" class="pagination--pager" title="B Trees
+">Previous</a>
+    
+    
+      <a href="http://localhost:4000/cableBlog/Asynchronous-request-batching-and-caching/" class="pagination--pager" title="Asynchronous request batching and caching
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Multivariable-Calculus/" rel="permalink">Multivariable Calculus
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-07-01T00:00:00+01:00">July 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  1 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">For multivariable integrals, the true story starts with a change of coordinates.
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Async-Initialization-in-Node.js/" rel="permalink">Async Initialization in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-30T00:00:00+01:00">June 30, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  8 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example is tryi...</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/A-Simple-Neural-Net/" rel="permalink">A Simple Neural Net
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Neurons
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="http://localhost:4000/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
+</a>
+      
+    </h2>
+    <p class="page__meta">
+      
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+
+    <div class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+    
+    
+    
+      <li><a href="https://github.com/mrSnow95"><i class="fa fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="http://localhost:4000/cableBlog/feed.xml"><i class="fa fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2021 pi_squared. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="http://localhost:4000/cableBlog/assets/js/main.min.js"></script>
+
+
+
+
+
+
+
+<
+
+  </body>
+</html>

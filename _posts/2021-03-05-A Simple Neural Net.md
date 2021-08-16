@@ -1,11 +1,8 @@
 ---
-title: 2021-06-06-A Simple Neural Net
+title: A Simple Neural Net
 date: 2021-06-06
 use_math: true
 ---
-
-
-Neural Networks aren’t that complicated! The term “neural network” gets used as a buzzword a lot, but in reality they’re often much simpler than people imagine.
 
 **Neurons**
 
@@ -76,15 +73,7 @@ import numpy as np
 # ... code from previous section here
 
 class OurNeuralNetwork:
-  '''
-  A neural network with:
-    - 2 inputs
-    - a hidden layer with 2 neurons (h1, h2)
-    - an output layer with 1 neuron (o1)
-  Each neuron has the same weights and bias:
-    - w = [0, 1]
-    - b = 0
-  '''
+
   def __init__(self):
     weights = np.array([0, 1])
     bias = 0

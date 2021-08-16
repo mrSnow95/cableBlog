@@ -19,12 +19,12 @@
 
 
 
-<title>pi_squared - Page 3</title>
+<title>Multivariable Calculus - pi_squared</title>
 
 
 
 
-<meta name="description" content="Personal Blog about Math, Computer Science and Data Engineering">
+<meta name="description" content="For multivariable integrals, the true story starts with a change of coordinates.">
 
 
 
@@ -33,13 +33,15 @@
 
 <meta property="og:locale" content="en">
 <meta property="og:site_name" content="pi_squared">
-<meta property="og:title" content="pi_squared">
+<meta property="og:title" content="Multivariable Calculus">
 
 
-  <link rel="canonical" href="http://localhost:4000/cableBlog/page3/">
-  <meta property="og:url" content="http://localhost:4000/cableBlog/page3/">
+  <link rel="canonical" href="http://localhost:4000/cableBlog/Multivariable-Calculus/">
+  <meta property="og:url" content="http://localhost:4000/cableBlog/Multivariable-Calculus/">
 
 
+
+  <meta property="og:description" content="For multivariable integrals, the true story starts with a change of coordinates.">
 
 
 
@@ -65,12 +67,11 @@
 
 
 
+  <meta property="og:type" content="article">
+  <meta property="article:published_time" content="2021-07-01T00:00:00+01:00">
 
 
-  <link rel="prev" href="http://localhost:4000/cableBlog/page2/">
 
-
-  <link rel="next" href="http://localhost:4000/cableBlog/page4/">
 
 
 
@@ -133,6 +134,23 @@
 <!-- insert favicons. use http://realfavicongenerator.net/ -->
 
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+      inlineMath: [],
+      displayMath: [],
+      processEscapes: false,
+    }
+  });
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
 
 <!-- end custom head snippets -->
 
@@ -142,7 +160,7 @@
 
   </head>
 
-  <body class="layout--home">
+  <body class="layout--single">
 
     <!--[if lt IE 9]>
 <div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
@@ -304,61 +322,127 @@
 
 
 
-  <div class="archive">
+  <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Multivariable Calculus">
+    <meta itemprop="description" content="For multivariable integrals, the true story starts with a change of coordinates.">
+    <meta itemprop="datePublished" content="July 01, 2021">
     
-      <h1 class="page__title"></h1>
-    
-    <h3 class="archive__subtitle">Recent Posts</h3>
 
-
-  
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
+    <div class="page__inner-wrap">
       
-        <a href="http://localhost:4000/cableBlog/Node.js-and-MySQL/" rel="permalink">Node.js and MySQL
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-03-01T00:00:00+00:00">March 01, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+        <header>
+          <h1 class="page__title" itemprop="headline">Multivariable Calculus
+</h1>
+          <p class="page__meta">
+            
+              <time datetime="2021-07-01T00:00:00+01:00">July 01, 2021</time> &nbsp;&nbsp;&nbsp;
+            
+            
+              <i class="fa fa-clock-o" aria-hidden="true"></i> 
 
 
 
 
-  12 minute read
+  1 minute read
  &nbsp;&nbsp;&nbsp;
+            
+          </p>
+        </header>
       
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">Node.js is able to connect to MySQL database servers, but support for this is not built in. We need to make use of a Node.js package that handles the low lev...</p>
-  </article>
-</div>
+
+      <section class="page__content" itemprop="text">
+        
+        <p>For multivariable integrals, the true story starts with a change of coordinates.</p>
+
+<p>Let \(f : D ⊂ R ^ n → R\) be an integrable function. Let also \(x_{u} = (x_{i}(u_{j}))^ n _{i,j = 1}\) be a change of coordinates, viewed as a map from some domain \(D^*\) to \(D\), with Jacobian \(\frac{\partial x}{\partial u} =  det  (\frac{\partial x_{i} }{\partial u_{j}}).\). Then :</p>
+
+\[\int_{D} f(x) \,dx  =  \int_{D ^ *} f(x(u)) * | \frac{\partial x}{\partial u} | * du\]
+
+<p>There are three special situations worth mentioning:</p>
+
+<ul>
+  <li>
+    <p>The change in three dimensions from Cartesian to spherical coordinates \(x = \rho * sin \phi * cos \theta, y = \rho * cos \phi * sin \theta, z = \rho * cos \phi\) with the Jacobian \(\frac{\partial (x,y,z)}{\partial (\rho,\theta,\phi)} = \rho ^ 2 * sin \phi\)</p>
+  </li>
+  <li>
+    <p>The change in two dimensions from Cartesian to polar coordinates \(x = r * cos\theta, y = r * sin \theta,\) with the Jacobian \(\frac{\partial (x,y)}{\partial (r,\theta)} = r\)</p>
+  </li>
+  <li>
+    <p>The change in two dimensions from Cartesian to cylindrical coordinates \(x = r * cos\theta, y = r * sin \theta, z = z\) with the Jacobian \(\frac{\partial (x,y,z)}{\partial (r,\theta,z)} = r\)</p>
+  </li>
+</ul>
+
+<p><strong>Example. Compute the Fresnel integrals</strong></p>
+
+<p>\(I = \int_{0} ^ {\infty} cos x ^ 2 dx\) and \(I = \int_{0} ^ {\infty} sin x ^ 2 dx\)</p>
 
 
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-07-01T00:00:00+01:00">July 01, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+    <h4 class="page__share-title">Share on</h4>
   
 
+  <a href="https://twitter.com/intent/tweet?text=Multivariable+Calculus%20http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FMultivariable-Calculus%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FMultivariable-Calculus%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://plus.google.com/share?url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FMultivariable-Calculus%2F" class="btn btn--google-plus" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i><span> Google+</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2FcableBlog%2FMultivariable-Calculus%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
 
 
-<div class="list__item">
+      
+  <nav class="pagination">
+    
+      <a href="http://localhost:4000/cableBlog/Async-Initialization-in-Node.js/" class="pagination--pager" title="Async Initialization in Node.js
+">Previous</a>
+    
+    
+      <a href="#" class="pagination--pager disabled">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
   <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="http://localhost:4000/cableBlog/Optimizing-Code-Performance-and-control-flow-with-Async/" rel="permalink">Optimizing Code Performance and control flow with Async
+        <a href="http://localhost:4000/cableBlog/Async-Initialization-in-Node.js/" rel="permalink">Async Initialization in Node.js
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-02-05T00:00:00+00:00">February 05, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-30T00:00:00+01:00">June 30, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -370,27 +454,27 @@
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">Async handling its what makes Node.js a powerful tool but also a confusing one. With C++, Java, C# and other OO languages, we were used to sync operations. L...</p>
+    <p class="archive__item-excerpt" itemprop="description">Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example is tryi...</p>
   </article>
 </div>
 
+        
+          
 
-  
 
 
-
-<div class="list__item">
+<div class="grid__item">
   <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="http://localhost:4000/cableBlog/Computational-Geometry-in-C++/" rel="permalink">Computational Geometry in C++
+        <a href="http://localhost:4000/cableBlog/A-Simple-Neural-Net/" rel="permalink">A Simple Neural Net
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-02-01T00:00:00+00:00">February 01, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-06T00:00:00+01:00">June 06, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -398,65 +482,33 @@
 
 
 
-  8 minute read
+  7 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">In this post i just want to make a compilation of useful C++ computational geometry algorithms used in Competitive Programming. One note is that it is define...</p>
-  </article>
-</div>
-
-
-  
-
-
-
-<div class="list__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="http://localhost:4000/cableBlog/Quake-and-the-Fast-Inverse-Square-Root/" rel="permalink">Quake III and the Fast Inverse Square Root
-</a>
-      
-    </h2>
-    <p class="page__meta">
-      
-        <time datetime="2021-01-20T00:00:00+00:00">January 20, 2021</time> &nbsp;&nbsp;&nbsp;
-      
-      
-        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-
-
-
-
-  6 minute read
- &nbsp;&nbsp;&nbsp;
-      
-    </p>
-    <p class="archive__item-excerpt" itemprop="description">Given a number \(x\) ,write a program that calculates the inverse square root:
+    <p class="archive__item-excerpt" itemprop="description">Neurons
 
 </p>
   </article>
 </div>
 
+        
+          
 
-  
 
 
-
-<div class="list__item">
+<div class="grid__item">
   <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="http://localhost:4000/cableBlog/BellmanFord/" rel="permalink">Currency Exchange and Negative Cycles
+        <a href="http://localhost:4000/cableBlog/Scalibility-and-Architectural-Patterns/" rel="permalink">Scalability and Architectural Patterns in Node.js
 </a>
       
     </h2>
     <p class="page__meta">
       
-        <time datetime="2021-01-07T00:00:00+00:00">January 07, 2021</time> &nbsp;&nbsp;&nbsp;
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
       
       
         <i class="fa fa-clock-o" aria-hidden="true"></i> 
@@ -464,70 +516,54 @@
 
 
 
-  2 minute read
+  5 minute read
  &nbsp;&nbsp;&nbsp;
       
     </p>
-    <p class="archive__item-excerpt" itemprop="description">I really enjoy graph problems, because most of the problems the difficulty lies not in the knowledge of various graph algorithms, but actually in the graph m...</p>
+    <p class="archive__item-excerpt" itemprop="description">Node.js is a non-blocking single thread architecture that works great for applications handling a moderate number of requests per second (usually a few hundr...</p>
   </article>
 </div>
 
-
-
-
-<nav class="pagination">
-  
-  <ul>
-    
-    
-      
-        <li><a href="http://localhost:4000/cableBlog/page2/">Previous</a></li>
-      
-    
-
-    
-    
-      <li><a href="http://localhost:4000/cableBlog/">1</a></li>
-    
-
-    
-    
-
-    
-    
-    
-
-    
-      
         
-        
-        
-        <li><a href="http://localhost:4000/cableBlog/page2/">2</a></li>
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
       
-    
+        <a href="http://localhost:4000/cableBlog/CPU-Bound/" rel="permalink">CPU Bound
+</a>
       
-        <li><a href="http://localhost:4000/cableBlog/page3/" class="disabled current">3</a></li>
+    </h2>
+    <p class="page__meta">
       
-    
-
-    
-    
-
-    
-      <li><a href="http://localhost:4000/cableBlog/page4/">4</a></li>
-    
-
-    
-    
-      <li><a href="http://localhost:4000/cableBlog/page4/">Next</a></li>
-    
-  </ul>
-</nav>
+        <time datetime="2021-06-01T00:00:00+01:00">June 01, 2021</time> &nbsp;&nbsp;&nbsp;
+      
+      
+        <i class="fa fa-clock-o" aria-hidden="true"></i> 
 
 
 
-  </div>
+
+  less than 1 minute read
+ &nbsp;&nbsp;&nbsp;
+      
+    </p>
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
 </div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
     </div>
 
     

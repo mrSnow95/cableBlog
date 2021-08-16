@@ -50,7 +50,7 @@ And in binary: $$ 11000 = 1.1 * 2 ^ {4} $$ , $$ 0.0101 = 1.01 * 2^{-3} $$
 According to the triple IEE 754 Standard, the first bit represents the sign ( $$ + $$ or $$ - $$ ), the next 8 bits represents the exponent, and the next 23 bits represents the Mantissa, the number that comes before the exponent in the binary scientific representation. The following picture makes more clear:
 
 
-![My helpful screenshot](/assets/images/bin.png)
+![My helpful screenshot](../assets/images/bin.png)
 
 That's how the standard specifies how to interpret these 32 bits for Float Numbers. And thererefore, to get the actual number from these 32 bits, we calculate $$ M $$, from the 23 first bits, $$ E $$, from the next 8, and finally the last sign, $$ S $$, and plug these guys in the formula:
 
@@ -77,7 +77,7 @@ The original programmers of Quake calculated that $$\mu = 0.04505$$ was a optima
 
 Now, a important note, $$ M + 2^{23}*E $$ is **exactly** how you represent this float number in binary:
 
-![My helpful screenshot](/assets/images/bin2.png)
+![My helpful screenshot](../assets/images/bin2.png)
 
 **The Evil Bit Hack**
 
@@ -165,7 +165,7 @@ Newton's method is a numeric procedure to have an approximation of the root of a
 
 The following image makes it more clear:
 
-![My helpful screenshot](/assets/images/newton.png)
+![My helpful screenshot](../assets/images/newton.png)
 
 So, given a number $$x$$, we iteratively calculate new $x$'s until we have $$f(x) \approx 0.0 $$ in the following way:
 
