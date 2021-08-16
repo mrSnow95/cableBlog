@@ -188,6 +188,127 @@ fetch("/api/user/profile").then(response => {
 
 When the Promise returned by fetch() is fulfilled, it passes a Response object to the function you passed to its then() method. This response object gives you access to request status and headers, and it also defines methods like text() and json(), which give you access to the body of the response in text and JSON-parsed forms, respectively. But although the initial Promise is fulfilled, the body of the response may not yet have arrived. So these text() and json() methods for accessing the body of the response themselves return Promises. Here’s a naive way of using fetch() and the response.json() method to get the body of an HTTP response:
 
-```javascrippt
+```javascript
+fetch("/api/user/profile").then(response => {
+     response.json().then( profile => { // Ask for the JSON-parsed body
+        // When the body of the response arrives, it will be automatically 
+        // parsed as JSON and passed to this function
+        displayUserProfile(profile);
+    }); 
+});
+```
+
+This is a naive way to use Promises because we nested them, like callbacks, which defeats the purpose. The preferred idiom is to use Promises in a sequential chain with code like this:
+
+```javascript
+ fetch("/api/user/profile")
+        .then(response => {
+            return response.json(); 
+        })
+        .then(profile => {
+            displayUserProfile(profile);
+});
+```
+Let’s look at the method invocations in this code, ignoring the arguments that are passed to the methods:
+
+```javascript
+    fetch().then().then()
+```
+
+**Promises in Parallel**
+
+Sometimes we want to execute a number of asynchronous operations in parallel. The function Promise.all() can do this. Promise.all() takes an array of Promise objects as its input and returns a Promise. The returned Promise will be rejected if any of the input Promises are rejected. Otherwise, it will be fulfilled with an array of the fulfillment values of each of the input Promises. So, for example, if you want to fetch the text content of multiple URLs, you could use code like this:
+
+```javascript
+// We start with an array of URLs
+const urls = [ /* zero or more URLs here */ ];
+// And convert it to an array of Promise objects
+promises = urls.map(url => fetch(url).then(r => r.text())); // Now get a Promise to run all those Promises in parallel 
+Promise.all(promises)
+       .then(bodies => { /* do something with the array of strings */ }) 
+       .catch(e => console.error(e));
+
+```
+
+Promise.all() is slightly more flexible than described before. The input array can contain both Promise objects and non-Promise values. If an element of the array is not a Promise, it is treated as if it is the value of an already fulfilled Promise and is simply copied unchanged into the output array.
+
+The Promise returned by Promise.all() rejects when any of the input Promises is rejected. This happens immediately upon the first rejection and can happen while other input Promises are still pending. In ES2020, Promise.allSettled() takes an array of input Promises and returns a Promise, just like Promise.all() does. But Promise.allSettled() never rejects the returned Promise, and it does not fulfill that Promise until all of the input Promises have settled. The Promise resolves to an array of objects, with one object for each input Promise. Each of these returned objects has a status property set to “fulfilled” or “rejected.” If the status is “fulfilled”, then the object will also have a value property that gives the fulfillment value. And if the status is “rejected”, then the object will also have a reason property that gives the error or rejection value of the corresponding Promise:
+
+```javascript
+Promise.allSettled([Promise.resolve(1), Promise.reject(2), 3]).then(results => {
+    results[0] // => { status: "fulfilled", value: 1 }
+    results[1] // => { status: "rejected", reason: 2 }
+    results[2] // => { status: "fulfilled", value: 3 }
+});
+
+```
+
+Promise.all() makes it easy to run an arbitrary number of Promises in parallel. And Promise chains make it easy to express a sequence of a fixed number of Promises. Running an arbitrary number of Promises in sequence is trickier, however. Suppose, for example, that you have an array of URLs to fetch, but that to avoid overloading your network, you want to fetch them one at a time. If the array is of arbitrary length and unknown content, you can’t write out a Promise chain in advance, so you need to build one dynamically, with code like this:
+
+
+```javascript
+function fetchSequentially(urls) {
+    // We'll store the URL bodies here as we fetch them 
+    const bodies = [];
+    // Here's a Promise-returning function that fetches one body
+    function fetchOne(url) { 
+        return fetch(url)
+                .then(response => response.text())
+                .then(body => {
+    // We save the body to the array, and we're purposely 
+    // omitting a return value here (returning undefined) 
+                    bodies.push(body);
+            }); 
+    }
+    // Start with a Promise that will fulfill right away (with value undefined)
+    let p = Promise.resolve(undefined);
+    // Now loop through the desired URLs, building a Promise chain
+    // of arbitrary length, fetching one URL at each stage of the chain 
+    for(url of urls) {
+            p = p.then(() => fetchOne(url));
+    }
+    // When the last Promise in that chain is fulfilled, then the
+    // bodies array is ready. So let's return a Promise for that
+    // bodies array. Note that we don't include any error handlers: 
+    // we want to allow errors to propagate to the caller.
+    return p.then(() => bodies);
+}
+```
+
+Now: 
+
+```javascript
+function promiseSequence(inputs, promiseMaker) {
+        // Make a private copy of the array that we can modify
+        inputs = [...inputs];
+        // Here's the function that we'll use as a Promise callback 
+        // This is the pseudorecursive magic that makes this all work. 
+        function handleNextInput(outputs) {
+            if (inputs.length === 0) {
+            // If there are no more inputs left, then return the array 
+            // of outputs, finally fulfilling this Promise and all the 
+            // previous resolved-but-not-fulfilled Promises.
+                return outputs;
+            } else {
+            // If there are still input values to process, then we'll
+            // return a Promise object, resolving the current Promise
+            // with the future value from a new Promise.
+                let nextInput = inputs.shift(); 
+                // Get the next input value, return promiseMaker(nextInput) 
+                // compute the next output value,
+                // Then create a new outputs array with the new output value
+                .then(output => outputs.concat(output))
+                // Then "recurse", passing the new, longer, outputs array .then(handleNextInput);
+                // Start with a Promise that fulfills to an empty array and use // the function above as its callback.
+                return Promise.resolve([]).then(handleNextInput);
+            }
+        }
+}
+
+  // Given a URL, return a Promise that fulfills to the URL body text
+function fetchBody(url) { return fetch(url).then(r => r.text()); } 
+// Use it to sequentially fetch a bunch of URL bodies 
+promiseSequence(urls, fetchBody)
+.then(bodies => { /* do something with the array of strings */ }) .catch(console.error);
 
 ```
