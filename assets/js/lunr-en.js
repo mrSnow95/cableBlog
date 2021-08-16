@@ -127,15 +127,6 @@ var idx = lunr(function () {
     });
     
   
-    idx.add({
-      title: "Multivariable Calculus",
-      excerpt: "Multivariable Calculus and Linear Algebra are my favorite subjects in Math. Mainly because we can manipulate entitites that are way...",
-      categories: [],
-      tags: [],
-      id: 13
-    });
-    
-  
 
 
 console.log( jQuery.type(idx) );
@@ -282,17 +273,6 @@ var store = [
         "title": "Async Initialization in Node.js",
         "url": "/cableBlog/Async-Initialization-in-Node.js/",
         "excerpt": "Tasks that are trivial in traditional synchronous programming can become more complicated when applied to asynchronous programming. A typical example...",
-        "teaser":
-          
-            null
-          
-      },
-    
-      
-      {
-        "title": "Multivariable Calculus",
-        "url": "/cableBlog/Multivariable-Calculus/",
-        "excerpt": "Multivariable Calculus and Linear Algebra are my favorite subjects in Math. Mainly because we can manipulate entitites that are way...",
         "teaser":
           
             null
