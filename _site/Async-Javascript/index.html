@@ -340,7 +340,7 @@
 
 
 
-  9 minute read
+  13 minute read
  &nbsp;&nbsp;&nbsp;
             
           </p>
@@ -522,8 +522,122 @@
 
 <p>When the Promise returned by fetch() is fulfilled, it passes a Response object to the function you passed to its then() method. This response object gives you access to request status and headers, and it also defines methods like text() and json(), which give you access to the body of the response in text and JSON-parsed forms, respectively. But although the initial Promise is fulfilled, the body of the response may not yet have arrived. So these text() and json() methods for accessing the body of the response themselves return Promises. Here’s a naive way of using fetch() and the response.json() method to get the body of an HTTP response:</p>
 
-<pre><code class="language-javascrippt">
-</code></pre>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">fetch</span><span class="p">(</span><span class="dl">"</span><span class="s2">/api/user/profile</span><span class="dl">"</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+     <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span> <span class="nx">profile</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="c1">// Ask for the JSON-parsed body</span>
+        <span class="c1">// When the body of the response arrives, it will be automatically </span>
+        <span class="c1">// parsed as JSON and passed to this function</span>
+        <span class="nx">displayUserProfile</span><span class="p">(</span><span class="nx">profile</span><span class="p">);</span>
+    <span class="p">});</span> 
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This is a naive way to use Promises because we nested them, like callbacks, which defeats the purpose. The preferred idiom is to use Promises in a sequential chain with code like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nx">fetch</span><span class="p">(</span><span class="dl">"</span><span class="s2">/api/user/profile</span><span class="dl">"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span> 
+        <span class="p">})</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">profile</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">displayUserProfile</span><span class="p">(</span><span class="nx">profile</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+<p>Let’s look at the method invocations in this code, ignoring the arguments that are passed to the methods:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nx">fetch</span><span class="p">().</span><span class="nx">then</span><span class="p">().</span><span class="nx">then</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><strong>Promises in Parallel</strong></p>
+
+<p>Sometimes we want to execute a number of asynchronous operations in parallel. The function Promise.all() can do this. Promise.all() takes an array of Promise objects as its input and returns a Promise. The returned Promise will be rejected if any of the input Promises are rejected. Otherwise, it will be fulfilled with an array of the fulfillment values of each of the input Promises. So, for example, if you want to fetch the text content of multiple URLs, you could use code like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// We start with an array of URLs</span>
+<span class="kd">const</span> <span class="nx">urls</span> <span class="o">=</span> <span class="p">[</span> <span class="cm">/* zero or more URLs here */</span> <span class="p">];</span>
+<span class="c1">// And convert it to an array of Promise objects</span>
+<span class="nx">promises</span> <span class="o">=</span> <span class="nx">urls</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">url</span> <span class="o">=&gt;</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="o">=&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">text</span><span class="p">()));</span> <span class="c1">// Now get a Promise to run all those Promises in parallel </span>
+<span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">promises</span><span class="p">)</span>
+       <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">bodies</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="cm">/* do something with the array of strings */</span> <span class="p">})</span> 
+       <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">e</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">));</span>
+
+</code></pre></div></div>
+
+<p>Promise.all() is slightly more flexible than described before. The input array can contain both Promise objects and non-Promise values. If an element of the array is not a Promise, it is treated as if it is the value of an already fulfilled Promise and is simply copied unchanged into the output array.</p>
+
+<p>The Promise returned by Promise.all() rejects when any of the input Promises is rejected. This happens immediately upon the first rejection and can happen while other input Promises are still pending. In ES2020, Promise.allSettled() takes an array of input Promises and returns a Promise, just like Promise.all() does. But Promise.allSettled() never rejects the returned Promise, and it does not fulfill that Promise until all of the input Promises have settled. The Promise resolves to an array of objects, with one object for each input Promise. Each of these returned objects has a status property set to “fulfilled” or “rejected.” If the status is “fulfilled”, then the object will also have a value property that gives the fulfillment value. And if the status is “rejected”, then the object will also have a reason property that gives the error or rejection value of the corresponding Promise:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="p">.</span><span class="nx">allSettled</span><span class="p">([</span><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">3</span><span class="p">]).</span><span class="nx">then</span><span class="p">(</span><span class="nx">results</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">// =&gt; { status: "fulfilled", value: 1 }</span>
+    <span class="nx">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1">// =&gt; { status: "rejected", reason: 2 }</span>
+    <span class="nx">results</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1">// =&gt; { status: "fulfilled", value: 3 }</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<p>Promise.all() makes it easy to run an arbitrary number of Promises in parallel. And Promise chains make it easy to express a sequence of a fixed number of Promises. Running an arbitrary number of Promises in sequence is trickier, however. Suppose, for example, that you have an array of URLs to fetch, but that to avoid overloading your network, you want to fetch them one at a time. If the array is of arbitrary length and unknown content, you can’t write out a Promise chain in advance, so you need to build one dynamically, with code like this:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">fetchSequentially</span><span class="p">(</span><span class="nx">urls</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// We'll store the URL bodies here as we fetch them </span>
+    <span class="kd">const</span> <span class="nx">bodies</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="c1">// Here's a Promise-returning function that fetches one body</span>
+    <span class="kd">function</span> <span class="nx">fetchOne</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="o">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">())</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">body</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="c1">// We save the body to the array, and we're purposely </span>
+    <span class="c1">// omitting a return value here (returning undefined) </span>
+                    <span class="nx">bodies</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+            <span class="p">});</span> 
+    <span class="p">}</span>
+    <span class="c1">// Start with a Promise that will fulfill right away (with value undefined)</span>
+    <span class="kd">let</span> <span class="nx">p</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+    <span class="c1">// Now loop through the desired URLs, building a Promise chain</span>
+    <span class="c1">// of arbitrary length, fetching one URL at each stage of the chain </span>
+    <span class="k">for</span><span class="p">(</span><span class="nx">url</span> <span class="k">of</span> <span class="nx">urls</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">p</span> <span class="o">=</span> <span class="nx">p</span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">fetchOne</span><span class="p">(</span><span class="nx">url</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="c1">// When the last Promise in that chain is fulfilled, then the</span>
+    <span class="c1">// bodies array is ready. So let's return a Promise for that</span>
+    <span class="c1">// bodies array. Note that we don't include any error handlers: </span>
+    <span class="c1">// we want to allow errors to propagate to the caller.</span>
+    <span class="k">return</span> <span class="nx">p</span><span class="p">.</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">bodies</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">promiseSequence</span><span class="p">(</span><span class="nx">inputs</span><span class="p">,</span> <span class="nx">promiseMaker</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Make a private copy of the array that we can modify</span>
+        <span class="nx">inputs</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">inputs</span><span class="p">];</span>
+        <span class="c1">// Here's the function that we'll use as a Promise callback </span>
+        <span class="c1">// This is the pseudorecursive magic that makes this all work. </span>
+        <span class="kd">function</span> <span class="nx">handleNextInput</span><span class="p">(</span><span class="nx">outputs</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">inputs</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// If there are no more inputs left, then return the array </span>
+            <span class="c1">// of outputs, finally fulfilling this Promise and all the </span>
+            <span class="c1">// previous resolved-but-not-fulfilled Promises.</span>
+                <span class="k">return</span> <span class="nx">outputs</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// If there are still input values to process, then we'll</span>
+            <span class="c1">// return a Promise object, resolving the current Promise</span>
+            <span class="c1">// with the future value from a new Promise.</span>
+                <span class="kd">let</span> <span class="nx">nextInput</span> <span class="o">=</span> <span class="nx">inputs</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> 
+                <span class="c1">// Get the next input value, return promiseMaker(nextInput) </span>
+                <span class="c1">// compute the next output value,</span>
+                <span class="c1">// Then create a new outputs array with the new output value</span>
+                <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">output</span> <span class="o">=&gt;</span> <span class="nx">outputs</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">output</span><span class="p">))</span>
+                <span class="c1">// Then "recurse", passing the new, longer, outputs array .then(handleNextInput);</span>
+                <span class="c1">// Start with a Promise that fulfills to an empty array and use // the function above as its callback.</span>
+                <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">([]).</span><span class="nx">then</span><span class="p">(</span><span class="nx">handleNextInput</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+
+  <span class="c1">// Given a URL, return a Promise that fulfills to the URL body text</span>
+<span class="kd">function</span> <span class="nx">fetchBody</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">fetch</span><span class="p">(</span><span class="nx">url</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">r</span> <span class="o">=&gt;</span> <span class="nx">r</span><span class="p">.</span><span class="nx">text</span><span class="p">());</span> <span class="p">}</span> 
+<span class="c1">// Use it to sequentially fetch a bunch of URL bodies </span>
+<span class="nx">promiseSequence</span><span class="p">(</span><span class="nx">urls</span><span class="p">,</span> <span class="nx">fetchBody</span><span class="p">)</span>
+<span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">bodies</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="cm">/* do something with the array of strings */</span> <span class="p">})</span> <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">);</span>
+
+</code></pre></div></div>
 
         
       </section>
